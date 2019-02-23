@@ -1,5 +1,9 @@
+const path = require("path");
+const HWP = require("html-webpack-plugin");
+
 module.exports = {
-  entry: "./src/index.js",
+  entry: path.join(__dirname, '/src/index.js'),
+  mode: "development",
   module: {
     rules: [
       {
@@ -17,15 +21,19 @@ module.exports = {
       }
     ]
   },
+  plugins: [
+    new HWP(
+      { template: path.join(__dirname, '/public/index.html') }
+    ),
+  ],
   resolve: {
     extensions: ["*", ".js", ".jsx"]
   },
   output: {
-    path: __dirname + "/dist",
-    publicPath: "/",
+    path: path.resolve(__dirname, "../shipyard-server/public/"),
     filename: "bundle.js"
   },
   devServer: {
-    contentBase: "./dist"
+    contentBase: path.resolve(__dirname, "../shipyard-server/public/")
   }
 };
