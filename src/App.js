@@ -1,35 +1,25 @@
-import React, { Component } from 'react';
-import axios from 'axios';
-import './App.css';
+import React, { Component } from "react";
+
+import { Provider } from "react-redux";
+import { ConnectedRouter } from "connected-react-router";
+
+import store from "./config/store";
+import { MainRouter } from "./config/routes";
+
+import { history } from './config/store';
 
 class App extends Component {
-  state = {
-    message: '',
-  }
-  
-  testApiCall = async () => {
-    try {
-      const res = await axios.get('/tests');
-      console.log(res);
-      this.setState({
-        message: res.data.message,
-      });
-    } catch (e) {
-      this.setState({
-        message: 'Something wrong',
-      });
-    }
-  }
+  state = {};
 
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <div>Shipyard App Boilerplate</div><br />
-          <button type="button" onClick={this.testApiCall}>Test</button><br />
-          <p>{this.state.message}</p>
-        </header>
-      </div>
+      <Provider store={store}>
+        <ConnectedRouter history={history}>
+          <div className="App">
+            <MainRouter />
+          </div>
+        </ConnectedRouter>
+      </Provider>
     );
   }
 }

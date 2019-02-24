@@ -1,5 +1,6 @@
 const path = require("path");
 const HWP = require("html-webpack-plugin");
+const ManifestPlugin = require('webpack-manifest-plugin');
 
 module.exports = {
   entry: path.join(__dirname, '/src/index.js'),
@@ -25,6 +26,7 @@ module.exports = {
     new HWP(
       { template: path.join(__dirname, '/public/index.html') }
     ),
+    new ManifestPlugin(),
   ],
   resolve: {
     extensions: ["*", ".js", ".jsx"]
