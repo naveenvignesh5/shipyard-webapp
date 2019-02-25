@@ -6,7 +6,7 @@ import { ConnectedRouter } from "connected-react-router";
 import store from "./config/store";
 import { MainRouter } from "./config/routes";
 
-import { history } from './config/store';
+import { history } from "./config/store";
 
 class App extends Component {
   state = {};

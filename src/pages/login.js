@@ -12,21 +12,30 @@ import "../styles/login.css";
 class Login extends Component {
   state = {
     username: "",
-    password: ""
+    password: "",
+    type: "client"
   };
 
   handleLogin = () => {
-    const { username = '', password = '' } = this.state;
-    if (username && password) {
-      this.props.login(username, password);
+    const { username = "", password = "", type="" } = this.state;
+    if (username && password && type) {
+      console.log(type);
+      this.props.login(username, password, type);
     }
-  }
+  };
 
   handleOnChangeText = (name, value) => {
     this.setState({
       [name]: value
     });
-  }
+  };
+
+  handleRadioPress = (name, e) => {
+    console.log(e.currentTarget.value);
+    this.setState({
+      [name]: e.currentTarget.value,
+    });
+  };
 
   render() {
     const { isLoading } = this.props;
@@ -65,7 +74,9 @@ class Login extends Component {
                   type="radio"
                   name="type"
                   id="radio1"
-                  value="option1"
+                  value="client"
+                  defaultChecked
+                  onChange={e => this.handleRadioPress("type", e)}
                 />
                 <label className="form-check-label" htmlFor="radio1">
                   Employee
@@ -77,7 +88,8 @@ class Login extends Component {
                   type="radio"
                   name="type"
                   id="radio2"
-                  value="option2"
+                  value="speaker"
+                  onChange={e => this.handleRadioPress("type", e)}
                 />
                 <label className="form-check-label" htmlFor="radio2">
                   Speaker
@@ -87,7 +99,11 @@ class Login extends Component {
           </div>
           {!isLoading ? (
             <div className="d-flex flex-row align-items-center">
-              <button onClick={this.handleLogin} type="button" className="btn btn-primary mr-4">
+              <button
+                onClick={this.handleLogin}
+                type="button"
+                className="btn btn-primary mr-4"
+              >
                 Login
               </button>
               <Link to="/register">Register</Link>

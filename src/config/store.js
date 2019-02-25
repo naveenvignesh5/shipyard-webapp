@@ -11,5 +11,7 @@ export const history = createHashHistory();
 export default createStore(
   createRootReducer(history),
   {}, // initial state
-  compose(applyMiddleware(routerMiddleware(history), thunk))
+  compose(
+    applyMiddleware(routerMiddleware(history), thunk),
+  ),
 );

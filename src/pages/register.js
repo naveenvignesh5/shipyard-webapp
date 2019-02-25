@@ -1,8 +1,37 @@
 import React, { Component } from "react";
 // import PropTypes from "prop-types";
 
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
+
+import { register } from '../redux/actions/action-auth';
+
 class Register extends Component {
-  state = {};
+  state = {
+    username: "",
+    password: "",
+    copyPassword: ""
+  };
+
+  handleRegister = () => {
+    let { username, password, copyPassword } = this.state;
+
+    username = username.trim() || "";
+    password = password.trim() || "";
+    copyPassword = copyPassword.trim() || "";
+
+    if (username && password && copyPassword) {
+      if (password === copyPassword) {
+        this.props.register(username, password);
+      } else alert("Passwords don't match");
+    } else alert("Enter all values !!!");
+  };
+
+  handleTextChange = (name, value) => {
+    this.setState({
+      [name]: value
+    });
+  };
 
   render() {
     return (
@@ -10,19 +39,40 @@ class Register extends Component {
         <div className="title">Register</div>
         <form className="form">
           <div className="form-group">
-            <label htmlFor="email">Username</label>
-            <input type="email" className="form-control" id="email" />
+            <label htmlFor="name">Username</label>
+            <input
+              type="text"
+              className="form-control"
+              id="name"
+              onChange={e => this.handleTextChange("username", e.target.value)}
+            />
           </div>
           <div className="form-group">
             <label htmlFor="pwd">Password</label>
-            <input type="password" className="form-control" id="pwd" />
+            <input
+              type="password"
+              className="form-control"
+              id="pwd"
+              onChange={e => this.handleTextChange("password", e.target.value)}
+            />
           </div>
           <div className="form-group">
             <label htmlFor="confpwd">Confirm Password</label>
-            <input type="password" className="form-control" id="confpwd" />
+            <input
+              type="password"
+              className="form-control"
+              id="confpwd"
+              onChange={e =>
+                this.handleTextChange("copyPassword", e.target.value)
+              }
+            />
           </div>
           <div className="d-flex flex-row align-items-center">
-            <button type="button" className="btn btn-primary mr-4">
+            <button
+              type="button"
+              className="btn btn-primary mr-4"
+              onClick={this.handleRegister}
+            >
               Register
             </button>
           </div>
@@ -32,4 +82,16 @@ class Register extends Component {
   }
 }
 
-export default Register;
+const mapStateToProps = state => ({
+  user: state.auth.user,
+  isLoading: state.auth.isLoading,
+  isError: state.auth.isError,
+  error: state.auth.error,
+});
+
+const mapDispatchToProps = dispatch => bindActionCreators({ register }, dispatch);
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Register);

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { push } from "connected-react-router";
+import { push, goBack } from "connected-react-router";
 
 import * as types from "../actionTypes";
 
@@ -17,15 +17,52 @@ const loginRequestError = error => ({
   error
 });
 
-export const login = (username, password) => async dispatch => {
+const registerRequest = () => ({
+  type: types.SIGNUP_REQUEST
+});
+
+const registerRequestSuccess = user => ({
+  type: types.SIGNUP_REQUEST_SUCCESS,
+  payload: user
+});
+
+const registerRequestError = error => ({
+  type: types.SIGNUP_REQUEST_ERROR,
+  error
+});
+
+export const login = (username, password, type) => async dispatch => {
   try {
     dispatch(loginRequest());
     const res = await axios.post("/users/login", { username, password });
     if (res.data.username) {
-      dispatch(loginRequestSuccess(res.data));
-      dispatch(push('/home'));
+      const tokenRes = await axios.post("/session/token", {
+        userid: res.data.id
+      });
+      const user = {
+        ...res.data, // database data
+        token: tokenRes.data.token // twilio access token
+      };
+
+      dispatch(loginRequestSuccess(user));
+      if (type === "client") dispatch(push("/home"));
+      else if (type === "speaker") dispatch(push("/admin"));
     }
   } catch (err) {
     dispatch(loginRequestError(err));
+  }
+};
+
+export const register = (username, password) => async dispatch => {
+  try {
+    dispatch(registerRequest());
+    const res = await axios.post("/users/register", { username, password });
+    if (res.data.username) {
+      dispatch(registerRequestSuccess(res.data));
+      dispatch(goBack());
+    }
+  } catch (err) {
+    console.log("Error caught", err);
+    dispatch(registerRequestError(err.data));
   }
 };

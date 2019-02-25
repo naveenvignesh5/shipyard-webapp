@@ -6,6 +6,18 @@ import Login from "../pages/login";
 import Register from '../pages/register';
 import Home from '../pages/home';
 
+// Admin Pages
+import { AdminDashboard } from '../pages/admin';
+
+// Admin router
+const AdminRouter = () => (
+  <Router>
+    <Switch>
+      <Route path= '/' component={AdminDashboard} />
+    </Switch>
+  </Router>
+);
+
 // Main Route
 const MainRouter = () => (
   <Router>
@@ -13,8 +25,10 @@ const MainRouter = () => (
       <Route exact path='/' component={Login} />
       <Route path='/register' component={Register} />
       <Route path='/home' component={Home} />
+      <Route path='/admin' component={AdminRouter} />
     </Switch>
   </Router>
 );
+
 
 export { MainRouter }; // eslint-disable-line
