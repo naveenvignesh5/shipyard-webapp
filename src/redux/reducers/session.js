@@ -17,10 +17,11 @@ export default (state = initialState, action) => {
         error: {}
       });
     case types.LIST_ROOMS_SUCCESS:
+      console.log(action.roomsLive);
       return Object.assign({}, state, {
-        roomsLive: action.active ? state.roomsLive.concat(action.payload) : state.roomsLive,
-        roomsClosed: !action.active ? state.roomsClosed.concat(action.payload) : state.roomsClosed,
-        isLoading: false,
+        roomsLive: state.roomsLive.concat(action.roomsLive),
+        roomsClosed: state.roomsClosed.concat(action.roomsClosed),
+        isLoading: false
       });
     case types.LIST_ROOMS_FAILURE:
       return Object.assign({}, state, {

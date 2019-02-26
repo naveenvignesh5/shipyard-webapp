@@ -9,14 +9,22 @@ import Navbar from "../../components/Navbar";
 import { logout } from "../../redux/actions/action-auth";
 import {
   listCompletedRooms,
-  listActiveRooms
+  listActiveRooms,
+  createRoom
 } from "../../redux/actions/action-session";
 
 import "../../styles/dashboard.css";
 import "../../styles/admin.css";
 
 class Dashboard extends Component {
-  state = {};
+  static getDerivedStateFromProps = nextProps => {
+    console.log(nextProps.roomsLive);
+    return null;
+  }
+  state = {
+    roomName: "",
+    roomSize: 0,
+  };
 
   componentDidMount() {
     this.props.listCompletedRooms();
@@ -31,6 +39,22 @@ class Dashboard extends Component {
     this.setState({
       [name]: e.target.value
     });
+  };
+
+  handleCreateRoom = () => {
+    const { roomSize, roomName } = this.state;
+
+    if (!roomName) {
+      alert('Room name cannot be empty')
+      return;
+    }
+
+    if (!roomSize) {
+      alert('Room size cannot be 0');
+      return;
+    }
+
+    this.props.createRoom(roomName, roomSize);
   };
 
   render() {
@@ -75,7 +99,11 @@ class Dashboard extends Component {
                     placeholder=""
                   />
                 </div>
-                <button className="btn btn-primary" type="button">
+                <button
+                  className="btn btn-primary"
+                  type="button"
+                  onClick={this.handleCreateRoom}
+                >
                   Create
                 </button>
               </form>
@@ -90,7 +118,7 @@ class Dashboard extends Component {
                 </div>
               ) : (
                 <div>
-                  {roomsLive.length > 0 ?
+                  {roomsLive.length > 0 ? (
                     roomsLive.slice(0, 9).map((room, index) => (
                       <a
                         key={index.toString()}
@@ -99,7 +127,10 @@ class Dashboard extends Component {
                       >
                         {room.unique_name}
                       </a>
-                    )) : <div className="no-rooms">No Rooms</div>}
+                    ))
+                  ) : (
+                    <div className="no-rooms">No Active Conferences</div>
+                  )}
                 </div>
               )}
             </div>
@@ -107,11 +138,11 @@ class Dashboard extends Component {
               <div className="title">List of Completed Conferences</div>
               {isLoading ? (
                 <div className="spinner-border text-dark" role="status">
-                  <span className="sr-only">Loading...</span>
+                  <span className="sr-only">Loading</span>
                 </div>
               ) : (
                 <div>
-                  {roomsClosed.length > 0 &&
+                  {roomsClosed.length > 0 ? (
                     roomsClosed.slice(0, 9).map((room, index) => (
                       <a
                         key={index.toString()}
@@ -120,7 +151,10 @@ class Dashboard extends Component {
                       >
                         {room.unique_name}
                       </a>
-                    ))}
+                    ))
+                  ) : (
+                    <div className="no-rooms">No History of conferences</div>
+                  )}
                 </div>
               )}
             </div>
@@ -140,7 +174,10 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch =>
-  bindActionCreators({ logout, listCompletedRooms, listActiveRooms }, dispatch);
+  bindActionCreators(
+    { logout, listCompletedRooms, listActiveRooms, createRoom },
+    dispatch
+  );
 
 export default connect(
   mapStateToProps,
