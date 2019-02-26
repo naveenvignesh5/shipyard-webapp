@@ -1,0 +1,16 @@
+.admin-container {
+    padding: 20px;
+}
+
+.input-group {
+    margin-bottom: 10px;
+}
+
+.create-form {
+    width: 500px;
+}
+
+.dashboard-welcome {
+    text-align: center;
+    font-size: 20px;
+}

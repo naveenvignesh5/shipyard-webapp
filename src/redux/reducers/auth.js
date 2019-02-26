@@ -18,6 +18,8 @@ export default (state = initialState, action) => {
     case types.LOGIN_REQUEST_ERROR:
     case types.SIGNUP_REQUEST_ERROR:
       return Object.assign({}, state, { isLoading: false, isError: true, error: action.error, user: {} });
+    case types.LOGOUT_REQUEST:
+      return Object.assign({}, state, { user: {} });
     default:
       return state;
   }

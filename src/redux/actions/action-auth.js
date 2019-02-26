@@ -31,6 +31,10 @@ const registerRequestError = error => ({
   error
 });
 
+const logoutRequest = () => ({
+  type: types.LOGOUT_REQUEST,
+});
+
 export const login = (username, password, type) => async dispatch => {
   try {
     dispatch(loginRequest());
@@ -52,6 +56,15 @@ export const login = (username, password, type) => async dispatch => {
     dispatch(loginRequestError(err));
   }
 };
+
+export const logout = () => async dispatch => {
+  try {
+    dispatch(logoutRequest());
+    dispatch(goBack());
+  } catch (err) {
+    console.log(err);
+  }
+}
 
 export const register = (username, password) => async dispatch => {
   try {
