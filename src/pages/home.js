@@ -7,13 +7,13 @@ import Video from "twilio-video";
 
 // components
 import Navbar from "../components/Navbar";
+import RoomList from "../components/RoomList";
 
 import { listActiveRooms, listCompletedRooms } from "../redux/actions/action-session";
 import { logout } from "../redux/actions/action-auth";
 
 import "../styles/home.css";
 import { bindActionCreators } from "C:/Users/Naveen Vignesh/AppData/Local/Microsoft/TypeScript/3.2/node_modules/redux";
-import RoomList from "../components/RoomList";
 
 class Home extends Component {
   static getDerivedStateFromProps = nextProps => {
