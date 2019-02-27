@@ -8,16 +8,16 @@ import Video from "twilio-video";
 // components
 import Navbar from "../components/Navbar";
 
-import { listActiveRooms } from "../redux/actions/action-session";
+import { listActiveRooms, listCompletedRooms } from "../redux/actions/action-session";
 import { logout } from "../redux/actions/action-auth";
 
 import "../styles/home.css";
 import { bindActionCreators } from "C:/Users/Naveen Vignesh/AppData/Local/Microsoft/TypeScript/3.2/node_modules/redux";
+import RoomList from "../components/RoomList";
 
 class Home extends Component {
   static getDerivedStateFromProps = nextProps => {
     const { user = {} } = nextProps;
-    console.log("User", user);
     if (user && user.id && user.token) {
       return {
         identity: user.id,
@@ -40,6 +40,12 @@ class Home extends Component {
 
   componentDidMount() {
     this.props.listActiveRooms();
+    this.props.listCompletedRooms();
+  }
+
+  handleVideoNavigation = (room) => {
+    console.log(room);
+    this.props.history.push(`/video/${room.sid}`);
   }
 
   handleMenuPress = (item, index) => {
@@ -177,27 +183,13 @@ class Home extends Component {
       <div className="container-fluid">
         <Navbar menuItems={["Logout"]} onMenuPress={this.handleMenuPress} />
         <div className="home-container">
-          {isLoading ? (
-            <div className="spinner-border text-dark" role="status">
-              <span className="sr-only">Loading...</span>
-            </div>
-          ) : (
-            <div>
-              {roomsLive.length > 0 ? (
-                roomsLive.slice(0, 9).map((room, index) => (
-                  <a
-                    key={index.toString()}
-                    href
-                    className="list-group-item list-group-item-action"
-                  >
-                    {room.unique_name}
-                  </a>
-                ))
-              ) : (
-                <div className="no-rooms">No Active Conferences</div>
-              )}
-            </div>
-          )}
+          <RoomList
+            loadingMessage="Loading..."
+            isLoading={isLoading}
+            title="List of Live Sessions"
+            rooms={roomsLive}
+            nullMessage="No Active Conferences"
+          />
           <div
             className="flex-item"
             ref={e => (this.localMedia = e)}
@@ -217,11 +209,12 @@ class Home extends Component {
 const mapStateToProps = state => ({
   user: state.auth.user,
   roomsLive: state.session.roomsLive,
+  roomsClosed: state.session.roomsClosed,
   isLoading: state.session.isLoading
 });
 
 const mapDispatchToProps = dispatch =>
-  bindActionCreators({ listActiveRooms, logout }, dispatch);
+  bindActionCreators({ listActiveRooms, listCompletedRooms, logout }, dispatch);
 
 export default withRouter(
   connect(

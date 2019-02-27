@@ -60,7 +60,7 @@ export const login = (username, password, type) => async dispatch => {
 export const logout = () => async dispatch => {
   try {
     dispatch(logoutRequest());
-    dispatch(goBack());
+    dispatch(push('/'));
   } catch (err) {
     console.log(err);
   }

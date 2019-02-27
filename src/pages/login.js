@@ -19,7 +19,6 @@ class Login extends Component {
   handleLogin = () => {
     const { username = "", password = "", type="" } = this.state;
     if (username && password && type) {
-      console.log(type);
       this.props.login(username, password, type);
     }
   };

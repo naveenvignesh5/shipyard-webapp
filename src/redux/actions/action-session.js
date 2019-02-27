@@ -30,7 +30,6 @@ const listRoomsRequestSuccess = (rooms, alive) => {
   if (alive) action.roomsLive = rooms;
   else action.roomsClosed = rooms;
 
-  console.log(action);
   return action;
 };
 

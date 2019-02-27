@@ -15,15 +15,12 @@ import {
 
 import "../../styles/dashboard.css";
 import "../../styles/admin.css";
+import RoomList from "../../components/RoomList";
 
 class Dashboard extends Component {
-  static getDerivedStateFromProps = nextProps => {
-    console.log(nextProps.roomsLive);
-    return null;
-  }
   state = {
     roomName: "",
-    roomSize: 0,
+    roomSize: 0
   };
 
   componentDidMount() {
@@ -45,12 +42,12 @@ class Dashboard extends Component {
     const { roomSize, roomName } = this.state;
 
     if (!roomName) {
-      alert('Room name cannot be empty')
+      alert("Room name cannot be empty");
       return;
     }
 
     if (!roomSize) {
-      alert('Room size cannot be 0');
+      alert("Room size cannot be 0");
       return;
     }
 
@@ -112,51 +109,21 @@ class Dashboard extends Component {
           <div className="row">
             <div className="col-md-6 col-sm-6">
               <div className="title">List of Active Conferences</div>
-              {isLoading ? (
-                <div className="spinner-border text-dark" role="status">
-                  <span className="sr-only">Loading...</span>
-                </div>
-              ) : (
-                <div>
-                  {roomsLive.length > 0 ? (
-                    roomsLive.slice(0, 9).map((room, index) => (
-                      <a
-                        key={index.toString()}
-                        href
-                        className="list-group-item list-group-item-action"
-                      >
-                        {room.unique_name}
-                      </a>
-                    ))
-                  ) : (
-                    <div className="no-rooms">No Active Conferences</div>
-                  )}
-                </div>
-              )}
+              <RoomList
+                loadingMessage="Loading Active Sessions..."
+                isLoading={isLoading}
+                rooms={roomsLive}
+                nullMessage="No Active Conferences"
+              />
             </div>
             <div className="col-md-6 col-sm-6">
               <div className="title">List of Completed Conferences</div>
-              {isLoading ? (
-                <div className="spinner-border text-dark" role="status">
-                  <span className="sr-only">Loading</span>
-                </div>
-              ) : (
-                <div>
-                  {roomsClosed.length > 0 ? (
-                    roomsClosed.slice(0, 9).map((room, index) => (
-                      <a
-                        key={index.toString()}
-                        href
-                        className="list-group-item list-group-item-action"
-                      >
-                        {room.unique_name}
-                      </a>
-                    ))
-                  ) : (
-                    <div className="no-rooms">No History of conferences</div>
-                  )}
-                </div>
-              )}
+              <RoomList
+                rooms={roomsClosed}
+                loadingMessage="Loading Closed Conferences..."
+                nullMessage="No History of Conferences"
+                isLoading={isLoading}
+              />
             </div>
           </div>
         </div>

@@ -22,11 +22,12 @@ module.exports = {
       }
     ]
   },
+  devtool: 'inline-source-map',
   plugins: [
     new HWP(
       { template: path.join(__dirname, '/public/index.html') }
     ),
-    new ManifestPlugin(),
+    new ManifestPlugin({ fileName: 'manifest.json' }),
   ],
   resolve: {
     extensions: ["*", ".js", ".jsx"]

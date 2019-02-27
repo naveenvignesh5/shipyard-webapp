@@ -17,7 +17,6 @@ export default (state = initialState, action) => {
         error: {}
       });
     case types.LIST_ROOMS_SUCCESS:
-      console.log(action.roomsLive);
       return Object.assign({}, state, {
         roomsLive: state.roomsLive.concat(action.roomsLive),
         roomsClosed: state.roomsClosed.concat(action.roomsClosed),
