@@ -8,12 +8,15 @@ import Video from "twilio-video";
 // components
 import Navbar from "../components/Navbar";
 import RoomList from "../components/RoomList";
+import { bindActionCreators } from "redux";
 
-import { listActiveRooms, listCompletedRooms } from "../redux/actions/action-session";
+import {
+  listActiveRooms,
+  listCompletedRooms
+} from "../redux/actions/action-session";
 import { logout } from "../redux/actions/action-auth";
 
 import "../styles/home.css";
-import { bindActionCreators } from "C:/Users/Naveen Vignesh/AppData/Local/Microsoft/TypeScript/3.2/node_modules/redux";
 
 class Home extends Component {
   static getDerivedStateFromProps = nextProps => {
@@ -40,13 +43,12 @@ class Home extends Component {
 
   componentDidMount() {
     this.props.listActiveRooms();
-    this.props.listCompletedRooms();
   }
 
-  handleVideoNavigation = (room) => {
+  handleVideoNavigation = room => {
     console.log(room);
     this.props.history.push(`/video/${room.sid}`);
-  }
+  };
 
   handleMenuPress = (item, index) => {
     if (index === 0) {
@@ -54,6 +56,7 @@ class Home extends Component {
       this.props.logout();
     }
   };
+
   joinRoom = () => {
     if (!this.state.roomName.trim()) {
       this.setState({ roomNameErr: true });

@@ -19,10 +19,10 @@ class RoomList extends PureComponent {
                 rooms.slice(0, 9).map((room, index) => (
                   <Link
                     key={index.toString()}
-                    to={`/video/${room.unique_name}`}
+                    to={`/video/${room.id}`}
                     className="list-group-item list-group-item-action"
                   >
-                    {room.unique_name}
+                    {room.name}
                   </Link>
                 ))
               ) : (

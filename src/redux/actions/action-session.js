@@ -59,19 +59,21 @@ export const listCompletedRooms = () => async dispatch => {
   await listRooms(false, dispatch);
 };
 
-export const createRoom = (name, size) => async dispatch => {
+export const createRoom = (name, size, user) => async dispatch => {
   try {
     dispatch(createRoomRequest());
+    
     const config = {
-      UniqueName: name,
-      type: ""
+      name,
+      user,
+      type: "",
     };
 
     if (size <= 4) config.type = "group-small";
     else if (size < 10) config.type = "peer-to-peer";
     else config.type = "group";
 
-    const res = await axios.post("/session/create", config);
+    const res = await axios.post("/session/createWithChat", config);
     console.log(res.data);
     dispatch(createRoomRequestSuccess(res.data));
     dispatch(listActiveRooms());

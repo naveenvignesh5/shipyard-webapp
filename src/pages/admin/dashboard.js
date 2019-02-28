@@ -51,7 +51,7 @@ class Dashboard extends Component {
       return;
     }
 
-    this.props.createRoom(roomName, roomSize);
+    this.props.createRoom(roomName, roomSize, this.props.user);
   };
 
   render() {

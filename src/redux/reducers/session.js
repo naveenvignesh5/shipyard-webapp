@@ -18,8 +18,8 @@ export default (state = initialState, action) => {
       });
     case types.LIST_ROOMS_SUCCESS:
       return Object.assign({}, state, {
-        roomsLive: state.roomsLive.concat(action.roomsLive),
-        roomsClosed: state.roomsClosed.concat(action.roomsClosed),
+        roomsLive: action.roomsLive,
+        roomsClosed: action.roomsClosed,
         isLoading: false
       });
     case types.LIST_ROOMS_FAILURE:

@@ -230,13 +230,22 @@ class VideoPage extends Component {
         localMediaAvailable: false
       });
     });
+
+    // Once the room is completed
+    room.on("room-ended", () => {
+      this.props.history.goBack();
+    });
   };
 
   render() {
-    const { hasJoinedRoom, user } = this.state;
+    const { hasJoinedRoom } = this.state;
+    const { user } = this.props;
+
     return (
       <div className="container-fluid">
-        <Navbar />
+        <Navbar
+          menuItems={[user.type === "client" ? "Exit Session" : "End Session"]}
+        />
         <div className="video-dashboard">
           <div className="row">
             <div className="col-sm-9 col-md-9">
