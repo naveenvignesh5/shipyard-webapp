@@ -1,11 +1,15 @@
 import React, { Component } from "react";
 import Video from "twilio-video";
+import Chat from "twilio-chat";
+
 import { connect } from "react-redux";
 
 import { withRouter } from "react-router-dom";
 
 import Navbar from "../components/Navbar";
 import { ChatContainer } from "../components/Chat";
+
+import { getSession } from "../libs/sessions";
 
 import "../styles/video.css";
 
@@ -92,24 +96,43 @@ class VideoPage extends Component {
     localMediaAvailable: false /* Represents the availability of a LocalAudioTrack(microphone) and a LocalVideoTrack(camera) */,
     hasJoinedRoom: false,
     token: "",
-    activeRoom: null // Track the current active room
+    activeRoom: null, // Track the current active room
+    activeChat: null, // Track the current chat
+    messages: [],
+    currentMessage: '',
+    session: {}
   };
 
   componentDidMount() {
-    console.log(this.props.match.params.id);
+    this.loadSession(this.props.match.params.id);
   }
 
-  handleJoinRoom = () => {
-    const { match, user } = this.props;
+  loadSession = async id => {
+    const session = await getSession(id);
     this.setState(
       {
-        roomName: match.params.id,
-        identity: user.username
+        session
       },
       () => {
-        this.joinRoom();
+        this.initChat();
       }
     );
+  };
+
+  handleJoinRoom = () => {
+    if (this.state.session) {
+      const { user } = this.props;
+      this.setState(
+        {
+          roomName: this.state.session.id,
+          identity: user.username
+        },
+        () => {
+          this.joinRoom();
+          // this.initChat();
+        }
+      );
+    }
   };
 
   joinRoom = () => {
@@ -237,6 +260,46 @@ class VideoPage extends Component {
     });
   };
 
+  handleInputChange = (e) => {
+    this.setState({
+      currentMessage: e.target.value,
+    });
+  }
+
+  handleSendMessage = () => {
+    const text = this.state.currentMessage.trim() || "";
+    this.state.activeChat.sendMessage(text);
+  }
+
+  initChat = async () => {
+    try {
+      const chatClient = await Chat.create(this.state.token);
+  
+      const channel = await chatClient.getChannelBySid(this.state.session.chatId);
+      await channel.join(); // joining channel
+      // this.setState({
+      //   activeChat: channel, // tracking the channel in state
+      // }, async () => {
+      // });
+      // // chat event callbacks
+      // chatClient.on('channelJoined', (channel) => {
+      //   console.log('Joined Channel' + channel.friendlyName);
+      // });
+      
+      // const { items: messages } = await channel.getMessages()
+
+      // // channel callbacks
+      // channel.on('messageAdded', (message) => {
+      //   this.setState(prevState => ({
+      //     messages: prevState.messages.concat(message),
+      //   }));
+      // });
+
+    } catch (err) {
+      console.log('Chat error', err);
+    }
+  };
+
   render() {
     const { hasJoinedRoom } = this.state;
     const { user } = this.props;
@@ -274,9 +337,10 @@ class VideoPage extends Component {
             </div>
             <div className="col-sm-3 col-md-3">
               <ChatContainer
-                messages={MESSAGES}
-                onInputChange={() => {}}
-                onButtonPress={() => {}}
+                messages={this.state.messages}
+                // messages={MESSAGES}
+                onInputChange={this.handleInputChange}
+                onButtonPress={this.handleSendMessage}
                 chatEnded={false}
                 user={{ username: "abc" }}
               />

@@ -5,7 +5,13 @@ import { Link } from 'react-router-dom';
 class RoomList extends PureComponent {
   state = {};
   render() {
-    const { loadingMessage, isLoading, rooms, nullMessage } = this.props;
+    const {
+      loadingMessage,
+      isLoading,
+      rooms,
+      nullMessage,
+    } = this.props;
+
     return (
       <div>
         {isLoading ? (
@@ -18,6 +24,7 @@ class RoomList extends PureComponent {
               {rooms.length > 0 ? (
                 rooms.slice(0, 9).map((room, index) => (
                   <Link
+                    type="button"
                     key={index.toString()}
                     to={`/video/${room.id}`}
                     className="list-group-item list-group-item-action"

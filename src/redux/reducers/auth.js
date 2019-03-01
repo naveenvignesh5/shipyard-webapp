@@ -14,6 +14,7 @@ export default (state = initialState, action) => {
       return Object.assign({}, state, { isLoading: true, isError: false, error: {} });
     case types.LOGIN_REQUEST_SUCCESS:
     case types.SIGNUP_REQUEST_SUCCESS:
+    case types.LOAD_USER_REQUEST:
       return Object.assign({}, state, { isLoading: false, user: action.payload });
     case types.LOGIN_REQUEST_ERROR:
     case types.SIGNUP_REQUEST_ERROR:

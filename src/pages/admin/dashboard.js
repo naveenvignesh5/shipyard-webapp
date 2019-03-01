@@ -18,11 +18,6 @@ import "../../styles/admin.css";
 import RoomList from "../../components/RoomList";
 
 class Dashboard extends Component {
-  static getDerivedStateFromProps = nextProps => {
-    console.log(nextProps.roomsClosed);
-    return null;
-  }
-
   state = {
     roomName: "",
     roomSize: 0
@@ -58,6 +53,10 @@ class Dashboard extends Component {
 
     this.props.createRoom(roomName, roomSize, this.props.user);
   };
+
+  // handleRoomListItemPress = room => {
+  //   this.props.history.push();
+  // };
 
   render() {
     const { user, isLoading, roomsClosed, roomsLive } = this.props;

@@ -31,17 +31,24 @@ const registerRequestError = error => ({
   error
 });
 
+const getUserRequest = payload => ({
+  type: types.LOAD_USER_REQUEST,
+  payload
+});
+
 const logoutRequest = () => ({
-  type: types.LOGOUT_REQUEST,
+  type: types.LOGOUT_REQUEST
 });
 
 export const login = (username, password, role) => async dispatch => {
   try {
     dispatch(loginRequest());
     const res = await axios.post("/users/login", { username, password, role });
+    sessionStorage.setItem("user", JSON.stringify(res.data));
+
     if (res.data.username) {
       const tokenRes = await axios.post("/users/token", {
-        userid: res.data.id,
+        userid: res.data.id
       });
 
       const user = {
@@ -51,7 +58,7 @@ export const login = (username, password, role) => async dispatch => {
 
       dispatch(loginRequestSuccess(user));
       if (role === "client") dispatch(push("/home"));
-      else if (role === "speaker" || role === 'admin') dispatch(push("/admin"));
+      else if (role === "speaker" || role === "admin") dispatch(push("/admin"));
     }
   } catch (err) {
     dispatch(loginRequestError(err));
@@ -61,18 +68,18 @@ export const login = (username, password, role) => async dispatch => {
 
 export const logout = () => async dispatch => {
   try {
+    sessionStorage.setItem('user', null);
     dispatch(logoutRequest());
-    dispatch(push('/'));
+    dispatch(push("/"));
   } catch (err) {
     console.log(err);
   }
-}
+};
 
 export const register = (username, password) => async dispatch => {
   try {
     dispatch(registerRequest());
     const res = await axios.post("/users/register", { username, password });
-    console.log(res.data);
     if (res.data.username) {
       dispatch(registerRequestSuccess(res.data));
       dispatch(goBack());
@@ -80,5 +87,20 @@ export const register = (username, password) => async dispatch => {
   } catch (err) {
     alert(err.response.data.message);
     dispatch(registerRequestError(err.data));
+  }
+};
+
+export const getUser = () => dispatch => {
+  try {
+    const data = sessionStorage.getItem("user");
+    console.log(data);
+    if (data) {
+      const user = JSON.parse(data);
+      dispatch(getUserRequest(user));
+      if (user.role === "client") dispatch(push("/home"));
+      else if (user.role === "admin") dispatch(push("/admin"));
+    }
+  } catch (err) {
+    console.log(err);
   }
 };

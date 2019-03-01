@@ -3,22 +3,19 @@ import { HashRouter as Router, Route, Switch } from "react-router-dom";
 
 // Pages
 import Login from "../pages/login";
-import Register from '../pages/register';
-import Home from '../pages/home';
-import Video from '../pages/video';
+import Register from "../pages/register";
+import Home from "../pages/home";
+import Video from "../pages/video";
 
 // Admin Pages
-import { AdminDashboard } from '../pages/admin';
-
-// withAuth
-// import withAuth from '../libs/withAuth';
+import { AdminDashboard } from "../pages/admin";
 
 // Admin router
 const AdminRouter = () => (
   <Router>
     <Switch>
-      <Route path= '/' component={AdminDashboard} />
-      <Route path='/video' component={Video} />
+      <Route path="/" component={AdminDashboard} />
+      <Route path="/video/:id" component={Video} />
     </Switch>
   </Router>
 );
@@ -27,13 +24,13 @@ const AdminRouter = () => (
 const MainRouter = () => (
   <Router>
     <Switch>
-      <Route exact path='/' component={Login} />
-      <Route path='/register' component={Register} />
+      <Route exact path="/" component={Login} />
+      <Route path="/register" component={Register} />
       <Route path="/home" component={Home} />
       {/* <Route path='/home' component={withAuth(Home)} /> */}
       {/* <Route path='/admin' component={withAuth(AdminRouter)} /> */}
-      <Route path='/admin' component={AdminRouter} />
-      <Route path='/video/:id' component={Video} />
+      <Route path="/admin" component={AdminRouter} />
+      <Route path="/video/:id" component={Video} />
     </Switch>
   </Router>
 );
