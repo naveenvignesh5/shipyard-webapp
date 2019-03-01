@@ -35,25 +35,27 @@ const logoutRequest = () => ({
   type: types.LOGOUT_REQUEST,
 });
 
-export const login = (username, password, type) => async dispatch => {
+export const login = (username, password, role) => async dispatch => {
   try {
     dispatch(loginRequest());
-    const res = await axios.post("/users/login", { username, password });
+    const res = await axios.post("/users/login", { username, password, role });
     if (res.data.username) {
       const tokenRes = await axios.post("/users/token", {
         userid: res.data.id,
       });
+
       const user = {
         ...res.data, // database data
         token: tokenRes.data.token // twilio access token
       };
 
       dispatch(loginRequestSuccess(user));
-      if (type === "client") dispatch(push("/home"));
-      else if (type === "speaker") dispatch(push("/admin"));
+      if (role === "client") dispatch(push("/home"));
+      else if (role === "speaker" || role === 'admin') dispatch(push("/admin"));
     }
   } catch (err) {
     dispatch(loginRequestError(err));
+    alert(err.response.data.message);
   }
 };
 
@@ -70,12 +72,13 @@ export const register = (username, password) => async dispatch => {
   try {
     dispatch(registerRequest());
     const res = await axios.post("/users/register", { username, password });
+    console.log(res.data);
     if (res.data.username) {
       dispatch(registerRequestSuccess(res.data));
       dispatch(goBack());
     }
   } catch (err) {
-    console.log("Error caught", err);
+    alert(err.response.data.message);
     dispatch(registerRequestError(err.data));
   }
 };

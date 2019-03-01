@@ -17,21 +17,14 @@ const createRoomRequestFailure = error => ({
 });
 
 const listRoomsRequest = () => ({
-  type: types.LIST_ROOMS_REQUEST,
+  type: types.LIST_ROOMS_REQUEST
 });
 
-const listRoomsRequestSuccess = (rooms, alive) => {
-  const action = {
-    type: types.LIST_ROOMS_SUCCESS,
-    roomsLive: [],
-    roomsClosed: [],
-  };
-
-  if (alive) action.roomsLive = rooms;
-  else action.roomsClosed = rooms;
-
-  return action;
-};
+const listRoomsRequestSuccess = (rooms, alive) => ({
+  type: types.LIST_ROOMS_SUCCESS,
+  rooms,
+  alive
+});
 
 const listRoomsRequestFailure = error => ({
   type: types.LIST_ROOMS_FAILURE,
@@ -62,11 +55,11 @@ export const listCompletedRooms = () => async dispatch => {
 export const createRoom = (name, size, user) => async dispatch => {
   try {
     dispatch(createRoomRequest());
-    
+
     const config = {
       name,
       user,
-      type: "",
+      type: ""
     };
 
     if (size <= 4) config.type = "group-small";

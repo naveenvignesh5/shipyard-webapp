@@ -87,7 +87,7 @@ class Login extends Component {
                   type="radio"
                   name="type"
                   id="radio2"
-                  value="speaker"
+                  value="admin"
                   onChange={e => this.handleRadioPress("type", e)}
                 />
                 <label className="form-check-label" htmlFor="radio2">

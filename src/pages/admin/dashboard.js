@@ -18,6 +18,11 @@ import "../../styles/admin.css";
 import RoomList from "../../components/RoomList";
 
 class Dashboard extends Component {
+  static getDerivedStateFromProps = nextProps => {
+    console.log(nextProps.roomsClosed);
+    return null;
+  }
+
   state = {
     roomName: "",
     roomSize: 0
