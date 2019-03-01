@@ -44,8 +44,6 @@ export const login = (username, password, role) => async dispatch => {
   try {
     dispatch(loginRequest());
     const res = await axios.post("/users/login", { username, password, role });
-    sessionStorage.setItem("user", JSON.stringify(res.data));
-
     if (res.data.username) {
       const tokenRes = await axios.post("/users/token", {
         userid: res.data.id
@@ -55,6 +53,8 @@ export const login = (username, password, role) => async dispatch => {
         ...res.data, // database data
         token: tokenRes.data.token // twilio access token
       };
+
+      sessionStorage.setItem("user", JSON.stringify(res.data));
 
       dispatch(loginRequestSuccess(user));
       if (role === "client") dispatch(push("/home"));
@@ -68,7 +68,7 @@ export const login = (username, password, role) => async dispatch => {
 
 export const logout = () => async dispatch => {
   try {
-    sessionStorage.setItem('user', null);
+    sessionStorage.setItem("user", null);
     dispatch(logoutRequest());
     dispatch(push("/"));
   } catch (err) {
@@ -90,12 +90,15 @@ export const register = (username, password) => async dispatch => {
   }
 };
 
-export const getUser = () => dispatch => {
+export const getUser = () => async dispatch => {
   try {
     const data = sessionStorage.getItem("user");
-    console.log(data);
     if (data) {
       const user = JSON.parse(data);
+      const tokenRes = await axios.post("/users/token", {
+        userid: user.id
+      });
+      user.token = tokenRes.data.token; // renewing token
       dispatch(getUserRequest(user));
       if (user.role === "client") dispatch(push("/home"));
       else if (user.role === "admin") dispatch(push("/admin"));

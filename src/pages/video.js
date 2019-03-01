@@ -13,6 +13,9 @@ import { getSession } from "../libs/sessions";
 
 import "../styles/video.css";
 
+import { listMessages, sendMessage } from "../redux/actions/action-chat";
+import { bindActionCreators } from "redux";
+
 const MESSAGES = [
   {
     sid: "IMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
@@ -85,6 +88,7 @@ class VideoPage extends Component {
         token: user.token
       };
     }
+    
     return null;
   };
 
@@ -98,8 +102,7 @@ class VideoPage extends Component {
     token: "",
     activeRoom: null, // Track the current active room
     activeChat: null, // Track the current chat
-    messages: [],
-    currentMessage: '',
+    currentMessage: "",
     session: {}
   };
 
@@ -260,43 +263,63 @@ class VideoPage extends Component {
     });
   };
 
-  handleInputChange = (e) => {
+  handleInputChange = e => {
     this.setState({
-      currentMessage: e.target.value,
+      currentMessage: e.target.value
     });
-  }
+  };
 
   handleSendMessage = () => {
+    // 1. adding message using rest api
+
+    // const { chatId } = this.state.session;
     const text = this.state.currentMessage.trim() || "";
+    // this.props.sendMessage({
+    //   channelId: chatId,
+    //   username: this.props.user.username,
+    //   message: text
+    // });
+
+    // 2. Adding message by client SDK
     this.state.activeChat.sendMessage(text);
-  }
+  };
 
   initChat = async () => {
     try {
       const chatClient = await Chat.create(this.state.token);
-  
-      const channel = await chatClient.getChannelBySid(this.state.session.chatId);
-      await channel.join(); // joining channel
+
+      const channel = await chatClient.getChannelBySid(
+        this.state.session.chatId
+      );
+
+      if (this.props.user.role === "client") await channel.join(); // joining channel only when you are client
+
       // this.setState({
       //   activeChat: channel, // tracking the channel in state
       // }, async () => {
       // });
       // // chat event callbacks
-      // chatClient.on('channelJoined', (channel) => {
-      //   console.log('Joined Channel' + channel.friendlyName);
-      // });
-      
+      chatClient.on("channelJoined", channel => {
+        console.log("Joined Channel" + channel.friendlyName);
+      });
+
       // const { items: messages } = await channel.getMessages()
 
       // // channel callbacks
-      // channel.on('messageAdded', (message) => {
-      //   this.setState(prevState => ({
-      //     messages: prevState.messages.concat(message),
-      //   }));
-      // });
+      channel.on("messageAdded", message => {
+        console.log('message added', message);
+        // this.setState(prevState => ({
+        //   messages: prevState.concat(message)
+        // }));
+        this.props.listMessages(this.state.session.chatId);
+      });
 
+      this.setState({
+        activeChat: channel, // tracking the channel in state
+      });
+      // chat event callbacks
     } catch (err) {
-      console.log('Chat error', err);
+      console.log("Chat error", err);
     }
   };
 
@@ -337,7 +360,7 @@ class VideoPage extends Component {
             </div>
             <div className="col-sm-3 col-md-3">
               <ChatContainer
-                messages={this.state.messages}
+                messages={this.props.messages}
                 // messages={MESSAGES}
                 onInputChange={this.handleInputChange}
                 onButtonPress={this.handleSendMessage}
@@ -353,7 +376,16 @@ class VideoPage extends Component {
 }
 
 const mapStateToProps = state => ({
-  user: state.auth.user
+  user: state.auth.user,
+  messages: state.chat.messages
 });
 
-export default withRouter(connect(mapStateToProps)(VideoPage));
+const mapDispatchToProps = dispatch =>
+  bindActionCreators({ listMessages, sendMessage }, dispatch);
+
+export default withRouter(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(VideoPage)
+);
