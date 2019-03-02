@@ -95,13 +95,16 @@ export const getUser = () => async dispatch => {
     const data = sessionStorage.getItem("user");
     if (data) {
       const user = JSON.parse(data);
-      const tokenRes = await axios.post("/users/token", {
-        userid: user.id
-      });
-      user.token = tokenRes.data.token; // renewing token
-      dispatch(getUserRequest(user));
-      if (user.role === "client") dispatch(push("/home"));
-      else if (user.role === "admin") dispatch(push("/admin"));
+
+      if (user) {
+        const tokenRes = await axios.post("/users/token", {
+          userid: user.id
+        });
+        user.token = tokenRes.data.token; // renewing token
+        dispatch(getUserRequest(user));
+        if (user.role === "client") dispatch(push("/home"));
+        else if (user.role === "admin") dispatch(push("/admin"));
+      }
     }
   } catch (err) {
     console.log(err);

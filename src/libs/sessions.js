@@ -9,4 +9,13 @@ const getSession = async (sessionId) => {
   }
 }
 
-export { getSession };
+const endSession = async (sessionId) => {
+  try {
+    const res = await axios.get(`/session/end`, { sessionId });
+    return res.data;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export { getSession, endSession };

@@ -9,12 +9,13 @@ import { withRouter } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { ChatContainer } from "../components/Chat";
 
-import { getSession } from "../libs/sessions";
+import { getSession, endSession } from "../libs/sessions";
 
 import "../styles/video.css";
 
 import { listMessages, sendMessage } from "../redux/actions/action-chat";
 import { bindActionCreators } from "redux";
+import Questions from "../components/Questions";
 
 const MESSAGES = [
   {
@@ -81,15 +82,16 @@ const MESSAGES = [
 
 class VideoPage extends Component {
   static getDerivedStateFromProps = nextProps => {
-    const { user, messages } = nextProps;
+    const { user, messages, isLoading } = nextProps;
     if (user && user.token && user.username) {
       return {
         identity: user.username,
         token: user.token,
-        messages: messages.length > 0 ? messages : [],
+        messages: messages.length > 0 ? messages : [] // problem here
       };
     }
 
+    console.log(isLoading);
     return null;
   };
 
@@ -110,10 +112,6 @@ class VideoPage extends Component {
 
   componentDidMount() {
     this.loadSession(this.props.match.params.id);
-  }
-
-  componentDidUpdate() {
-    this.chatRef.canvas.scrollIntoView();
   }
 
   loadSession = async id => {
@@ -203,6 +201,7 @@ class VideoPage extends Component {
   roomJoined = room => {
     // Called when a participant joins a room
     console.log("Joined as '" + this.state.identity + "'");
+
     this.setState({
       activeRoom: room,
       localMediaAvailable: true,
@@ -231,6 +230,7 @@ class VideoPage extends Component {
     room.on("trackSubscribed", (track, participant) => {
       console.log(participant.identity + " added track: " + track.kind);
       var previewContainer = this.remoteMedia;
+      console.log("Particpant", participant);
       this.attachTracks([track], previewContainer);
     });
 
@@ -269,9 +269,9 @@ class VideoPage extends Component {
     });
   };
 
-  handleInputChange = e => {
+  handleInputChange = (name, e) => {
     this.setState({
-      currentMessage: e.target.value
+      [name]: e.target.value
     });
   };
 
@@ -290,13 +290,16 @@ class VideoPage extends Component {
     this.state.activeChat.sendMessage(text, {
       author: this.props.user.username
     });
+
+    this.setState({
+      currentMessage: ""
+    });
   };
 
   initChat = async () => {
     try {
       const chatClient = await Chat.create(this.state.token);
 
-      this.props.listMessages(this.state.session.chatId);
       const channel = await chatClient.getChannelBySid(
         this.state.session.chatId
       );
@@ -310,6 +313,8 @@ class VideoPage extends Component {
       }
       // // chat event callbacks
 
+      this.props.listMessages(this.state.session.chatId);
+
       chatClient.on("channelJoined", channel => {
         console.log("Joined Channel" + channel.friendlyName);
       });
@@ -318,35 +323,61 @@ class VideoPage extends Component {
 
       // // channel callbacks
       channel.on("messageAdded", message => {
-        console.log("message added", message);
-        this.setState(prevState => ({
-          messages: prevState.messages.push(message.state)
-        }));
-        
-        // this.props.listMessages(this.state.session.chatId, this.chatRef);
+        const msg = {
+          ...message.state,
+          author: this.props.user.username
+        };
+        this.setState(
+          prevState => {
+            const msgData = prevState.messages.concat(msg);
+            console.log(msgData);
+            return {
+              messages: msgData
+            };
+          },
+          () => console.log(this.state.messages)
+        );
+
+        this.props.listMessages(this.state.session.chatId);
       });
 
-      this.setState({
-        activeChat: channel // tracking the channel in state
-      });
+      this.setState(
+        {
+          activeChat: channel // tracking the channel in state
+        },
+        () => {
+          console.log("update channel");
+        }
+      );
       // chat event callbacks
     } catch (err) {
       console.log("Chat error", err);
     }
   };
 
+  handleMenuPress = async (item, index) => {
+    if (index === 0) {
+      try {
+        await endSession();
+      } catch (err) {
+        console.log("End session error", err);
+      }
+    }
+  };
+
   render() {
     const { hasJoinedRoom, messages } = this.state;
-    const { user } = this.props;
+    const { user, isLoading } = this.props;
 
     return (
       <div className="container-fluid">
         <Navbar
           menuItems={[user.type === "client" ? "Exit Session" : "End Session"]}
+          onMenuPress={this.handleMenuPress}
         />
         <div className="video-dashboard">
           <div className="row">
-            <div className="col-sm-9 col-md-9">
+            <div className="col-sm-8 col-md-8">
               {hasJoinedRoom ? (
                 <div>
                   <div
@@ -370,16 +401,42 @@ class VideoPage extends Component {
                 </button>
               )}
             </div>
-            <div className="col-sm-3 col-md-3">
-              <ChatContainer
+            <div className="col-sm-4 col-md-4">
+              <form className="d-flex flex-column">
+                <div className="input-group mb-3">
+                  <div className="input-group-prepend">
+                    <span className="input-group-text" id="basic-addon1">
+                      Your Question
+                    </span>
+                  </div>
+                  <input
+                    type="text"
+                    value={this.state.currentMessage}
+                    className="form-control"
+                    placeholder="type your question"
+                    aria-label="question"
+                    aria-describedby="basic-addon1"
+                    onChange={e => this.handleInputChange("currentMessage", e)}
+                  />
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-primary ask-btn"
+                  onClick={this.handleSendMessage}
+                >
+                  Ask
+                </button>
+              </form>
+              <Questions messages={messages} isLoading={isLoading} />
+              {/* <ChatContainer
                 messages={messages}
                 // messages={MESSAGES}
-                onInputChange={this.handleInputChange}
+                onInputChange={e => this.handleInputChange("currentMessage", e)}
                 onButtonPress={this.handleSendMessage}
                 chatEnded={false}
                 ref={e => (this.chatRef = e)}
                 user={{ username: "abc" }}
-              />
+              /> */}
             </div>
           </div>
         </div>
@@ -391,6 +448,7 @@ class VideoPage extends Component {
 const mapStateToProps = state => ({
   user: state.auth.user,
   messages: state.chat.messages,
+  isLoading: state.chat.isLoading
 });
 
 const mapDispatchToProps = dispatch =>
