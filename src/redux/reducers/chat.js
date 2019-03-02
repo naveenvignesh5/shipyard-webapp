@@ -10,9 +10,9 @@ const initialState = {
 export default (state = initialState, action) => {
   switch (action.type) {
     case types.REQUEST_CHAT_MESSAGES:
-      return Object.assign({}, state, { isLoading: false, isError: false, error: {} });
+      return Object.assign({}, state, { isLoading: true, isError: false, error: {} });
     case types.REQUEST_CHAT_MESSAGES_SUCCESS:
-      return Object.assign({}, state, { messages: action.payload });
+      return Object.assign({}, state, { messages: action.payload, isLoading: false });
     case types.REQUEST_CHAT_MESSAGES_FAILURE:
       return Object.assign({}, state, { error: action.error, isError: true });
     case types.SEND_CHAT_MESSAGE_REQUEST_SUCCESS:

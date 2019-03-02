@@ -114,6 +114,8 @@ class VideoPage extends Component {
     this.loadSession(this.props.match.params.id);
   }
 
+  handleOnTrackPress = track => {};
+
   loadSession = async id => {
     const session = await getSession(id);
     this.setState(
@@ -169,9 +171,12 @@ class VideoPage extends Component {
   };
 
   attachTracks = (tracks, container) => {
+    let wrapper = document.createElement("div");
+    wrapper.className = "track-wrapper";
     tracks.forEach(track => {
-      container.appendChild(track.attach());
+      wrapper.appendChild(track.attach());
     });
+    container.appendChild(wrapper);
   };
 
   // Attaches a track to a specified DOM container
@@ -213,6 +218,11 @@ class VideoPage extends Component {
     if (!previewContainer.querySelector("video")) {
       this.attachParticipantTracks(room.localParticipant, previewContainer);
     }
+
+    room.localParticipant.audioTracks.forEach(audioTrack => {
+      // console.log("AudioTrack", )
+      audioTrack.disable();
+    });
 
     // Attach the Tracks of the Room's Participants.
     room.participants.forEach(participant => {
@@ -353,7 +363,7 @@ class VideoPage extends Component {
     console.log(item, index);
     if (index === 0) {
       try {
-        await endSession(this.state.session.id);
+        await endSession(this.state.session.id, this.props.history);
       } catch (err) {
         console.log("End session error", err);
       }
@@ -376,12 +386,12 @@ class VideoPage extends Component {
               {hasJoinedRoom ? (
                 <div>
                   <div
-                    className="flex-item"
+                    // className="flex-item"
                     ref={e => (this.localMedia = e)}
                     id="local-media"
                   />
                   <div
-                    className="flex-item"
+                    // className="flex-item"
                     ref={e => (this.remoteMedia = e)}
                     id="remote-media"
                   />
@@ -404,7 +414,7 @@ class VideoPage extends Component {
                       Your Question
                     </span>
                   </div>
-                  <input
+                  <textarea
                     type="text"
                     value={this.state.currentMessage}
                     className="form-control"
