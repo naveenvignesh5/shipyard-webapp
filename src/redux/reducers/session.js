@@ -3,6 +3,7 @@ import * as types from "../actionTypes";
 const initialState = {
   roomsLive: [],
   roomsClosed: [],
+  files: [],
   isLoading: false,
   isError: false,
   error: {}
@@ -27,6 +28,10 @@ export default (state = initialState, action) => {
         isLoading: false,
         isError: true,
         error: action.error
+      });
+    case types.LIST_FILES_REQUEST_SUCCESS:
+      return Object.assign({}, state, {
+        files: action.payload,
       });
     default:
       return state;

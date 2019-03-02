@@ -10,7 +10,7 @@ import { logout } from "../../redux/actions/action-auth";
 import {
   listCompletedRooms,
   listActiveRooms,
-  createRoom
+  createRoom,
 } from "../../redux/actions/action-session";
 
 import "../../styles/dashboard.css";
@@ -190,7 +190,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
-    { logout, listCompletedRooms, listActiveRooms, createRoom },
+    { logout, listCompletedRooms, listActiveRooms, createRoom, },
     dispatch
   );
 

@@ -1,16 +1,17 @@
 import React, { Component } from "react";
 import Video from "twilio-video";
 import Chat from "twilio-chat";
-import axios from 'axios';
+import axios from "axios";
 
 import { connect } from "react-redux";
 
 import { withRouter } from "react-router-dom";
 
 import Navbar from "../components/Navbar";
-import { ChatContainer } from "../components/Chat";
+// import { ChatContainer } from "../components/Chat";
 
 import { getSession, endSession } from "../libs/sessions";
+import { listFiles } from "../redux/actions/action-session";
 
 import "../styles/video.css";
 
@@ -18,6 +19,7 @@ import { listMessages, sendMessage } from "../redux/actions/action-chat";
 import { bindActionCreators } from "redux";
 import Questions from "../components/Questions";
 import QuestionForm from "../components/QuestionForm";
+import FileList from "../components/FileList";
 
 // const MESSAGES = [
 //   {
@@ -84,7 +86,7 @@ import QuestionForm from "../components/QuestionForm";
 
 class VideoPage extends Component {
   static getDerivedStateFromProps = nextProps => {
-    const { user, messages, isLoading } = nextProps;
+    const { user, messages, files } = nextProps;
     if (user && user.token && user.username) {
       return {
         identity: user.username,
@@ -93,7 +95,7 @@ class VideoPage extends Component {
       };
     }
 
-    console.log(isLoading);
+    console.log(files);
     return null;
   };
 
@@ -127,6 +129,7 @@ class VideoPage extends Component {
       },
       () => {
         this.initChat();
+        this.props.listFiles(this.state.session.id);
       }
     );
   };
@@ -216,6 +219,7 @@ class VideoPage extends Component {
       hasJoinedRoom: true
     });
 
+    // this.props.listFiles();
     // Attach LocalParticipant's Tracks, if not already attached.
     var previewContainer = this.localMedia;
     if (!previewContainer.querySelector("video")) {
@@ -375,10 +379,10 @@ class VideoPage extends Component {
     const data = new FormData();
     data.append("file", this.state.selectedFile, this.state.selectedFile.name);
     data.append("sessionId", this.state.session.id);
-    
+
     try {
       await axios.post("/session/upload", data);
-      alert('Uploaded File');
+      alert("Uploaded File");
     } catch (err) {
       console.log(err);
     }
@@ -386,7 +390,7 @@ class VideoPage extends Component {
 
   render() {
     const { hasJoinedRoom, messages } = this.state;
-    const { user, isLoading } = this.props;
+    const { user, isLoading, files } = this.props;
 
     return (
       <div className="container-fluid">
@@ -431,19 +435,8 @@ class VideoPage extends Component {
                 />
               )}
               {this.state.hasJoinedRoom && (
-                <Questions messages={messages} isLoading={isLoading} />
-              )}
-              {/* <ChatContainer
-                messages={messages}
-                // messages={MESSAGES}
-                onInputChange={e => this.handleInputChange("currentMessage", e)}
-                onButtonPress={this.handleSendMessage}
-                chatEnded={false}
-                ref={e => (this.chatRef = e)}
-                user={{ username: "abc" }}
-              /> */}
-              {this.state.hasJoinedRoom && (
                 <div>
+                  <Questions messages={messages} isLoading={isLoading} />
                   <div className="title">Upload Your PPTs</div>
                   <input
                     type="file"
@@ -459,6 +452,9 @@ class VideoPage extends Component {
                   >
                     Upload
                   </button>
+                  {files && files.length > 0 && (
+                    <FileList files={files} sessionId={this.state.session.id} />
+                  )}
                 </div>
               )}
             </div>
@@ -472,11 +468,12 @@ class VideoPage extends Component {
 const mapStateToProps = state => ({
   user: state.auth.user,
   messages: state.chat.messages,
-  isLoading: state.chat.isLoading
+  isLoading: state.chat.isLoading,
+  files: state.session.files
 });
 
 const mapDispatchToProps = dispatch =>
-  bindActionCreators({ listMessages, sendMessage }, dispatch);
+  bindActionCreators({ listMessages, sendMessage, listFiles }, dispatch);
 
 export default withRouter(
   connect(

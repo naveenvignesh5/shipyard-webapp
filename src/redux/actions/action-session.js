@@ -84,11 +84,11 @@ const listFilesRequestError = error => ({
   error,
 });
 
-export const listFiles = () => async (dispatch) => {
+export const listFiles = (sessionId) => async (dispatch) => {
   try {
     dispatch(listFilesRequest());
-    const res = await axios.get('/session/ppts');
-    dispatch(listFilesRequestSuccess(res.data));
+    const res = await axios.get(`/session/files/${sessionId}`);
+    dispatch(listFilesRequestSuccess(res.data.files));
   } catch (err) {
     dispatch(listFilesRequestError(err));
   }
