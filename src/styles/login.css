@@ -5,12 +5,15 @@
 .title {
     text-align: center;
     font-size: 18pt;
+    font-weight: bold;
+    font-family: 'Montserrat', sans-serif;
 }
 
 .subtitle {
     text-align: center;
     font-size: 16pt;
     color: lightseagreen;
+    font-family: 'Nunito', sans-serif;
 }
 
 .form {
@@ -32,4 +35,14 @@
 
 label {
     font-weight: bold;
+    font-family: 'Nunito', sans-serif;
+}
+
+.logo {
+    display: block;
+    margin: 0 auto;
+}
+
+.makeininda {
+    height: 50px !important;
 }

@@ -9,6 +9,9 @@ import { login } from "../redux/actions/action-auth";
 
 import "../styles/login.css";
 
+import Logo from '../assets/logo.png';
+import makeInIndia from '../assets/makeinindia.png';
+
 class Login extends Component {
   state = {
     username: "",
@@ -40,7 +43,9 @@ class Login extends Component {
     const { isLoading } = this.props;
     return (
       <div className="container-fluid login-container">
-        <div className="title">Login</div>
+        <img alt="" className="logo" src={Logo} />
+        <div className="title">Goa Shipyard WebEx</div>
+        <div className="subtitle"></div>
         <form className="form">
           <div className="form-group">
             <label htmlFor="email">Username</label>

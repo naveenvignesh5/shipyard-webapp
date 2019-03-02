@@ -1,6 +1,11 @@
 .nav-btn {
     color: #fff;
     font-weight: bold;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.navbar-brand {
+    font-family: 'Nunito', sans-serif !important;
 }
 
 .nav-btn:hover {
