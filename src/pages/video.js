@@ -81,14 +81,15 @@ const MESSAGES = [
 
 class VideoPage extends Component {
   static getDerivedStateFromProps = nextProps => {
-    const { user } = nextProps;
+    const { user, messages } = nextProps;
     if (user && user.token && user.username) {
       return {
         identity: user.username,
-        token: user.token
+        token: user.token,
+        messages: messages.length > 0 ? messages : [],
       };
     }
-    
+
     return null;
   };
 
@@ -103,11 +104,16 @@ class VideoPage extends Component {
     activeRoom: null, // Track the current active room
     activeChat: null, // Track the current chat
     currentMessage: "",
+    messages: [],
     session: {}
   };
 
   componentDidMount() {
     this.loadSession(this.props.match.params.id);
+  }
+
+  componentDidUpdate() {
+    this.chatRef.canvas.scrollIntoView();
   }
 
   loadSession = async id => {
@@ -281,24 +287,29 @@ class VideoPage extends Component {
     // });
 
     // 2. Adding message by client SDK
-    this.state.activeChat.sendMessage(text);
+    this.state.activeChat.sendMessage(text, {
+      author: this.props.user.username
+    });
   };
 
   initChat = async () => {
     try {
       const chatClient = await Chat.create(this.state.token);
 
+      this.props.listMessages(this.state.session.chatId);
       const channel = await chatClient.getChannelBySid(
         this.state.session.chatId
       );
 
-      if (this.props.user.role === "client") await channel.join(); // joining channel only when you are client
-
-      // this.setState({
-      //   activeChat: channel, // tracking the channel in state
-      // }, async () => {
-      // });
+      if (this.props.user.role === "client") {
+        try {
+          await channel.join(); // joining channel only when you are client
+        } catch (err) {
+          console.log(err);
+        }
+      }
       // // chat event callbacks
+
       chatClient.on("channelJoined", channel => {
         console.log("Joined Channel" + channel.friendlyName);
       });
@@ -307,15 +318,16 @@ class VideoPage extends Component {
 
       // // channel callbacks
       channel.on("messageAdded", message => {
-        console.log('message added', message);
-        // this.setState(prevState => ({
-        //   messages: prevState.concat(message)
-        // }));
-        this.props.listMessages(this.state.session.chatId);
+        console.log("message added", message);
+        this.setState(prevState => ({
+          messages: prevState.messages.push(message.state)
+        }));
+        
+        // this.props.listMessages(this.state.session.chatId, this.chatRef);
       });
 
       this.setState({
-        activeChat: channel, // tracking the channel in state
+        activeChat: channel // tracking the channel in state
       });
       // chat event callbacks
     } catch (err) {
@@ -324,7 +336,7 @@ class VideoPage extends Component {
   };
 
   render() {
-    const { hasJoinedRoom } = this.state;
+    const { hasJoinedRoom, messages } = this.state;
     const { user } = this.props;
 
     return (
@@ -360,11 +372,12 @@ class VideoPage extends Component {
             </div>
             <div className="col-sm-3 col-md-3">
               <ChatContainer
-                messages={this.props.messages}
+                messages={messages}
                 // messages={MESSAGES}
                 onInputChange={this.handleInputChange}
                 onButtonPress={this.handleSendMessage}
                 chatEnded={false}
+                ref={e => (this.chatRef = e)}
                 user={{ username: "abc" }}
               />
             </div>
@@ -377,7 +390,7 @@ class VideoPage extends Component {
 
 const mapStateToProps = state => ({
   user: state.auth.user,
-  messages: state.chat.messages
+  messages: state.chat.messages,
 });
 
 const mapDispatchToProps = dispatch =>

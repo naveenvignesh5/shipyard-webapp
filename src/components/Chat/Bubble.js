@@ -4,14 +4,14 @@ import PropTypes from "prop-types";
 import "../../styles/chat.css";
 
 const ChatBubble = props => {
-  const { body, date_updated, from, user } = props;
+  const { body, date_updated, from, author, user } = props;
   return (
     <div
       className={`chat-bubble align-self-${
         from === user.username ? "end" : "start"
       }`}
     >
-      {from !== user.username && <p className="chat-bubble username">{from}</p>}
+      {from !== user.username && <p className="chat-bubble username">{from || author}</p>}
       <p className="text">{body}</p>
       {from !== user.username && <p className="timestamp">{date_updated}</p>}
     </div>

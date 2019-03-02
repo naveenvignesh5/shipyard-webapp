@@ -46,7 +46,7 @@ export const login = (username, password, role) => async dispatch => {
     const res = await axios.post("/users/login", { username, password, role });
     if (res.data.username) {
       const tokenRes = await axios.post("/users/token", {
-        userid: res.data.id
+        userid: res.data.username
       });
 
       const user = {

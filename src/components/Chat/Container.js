@@ -34,11 +34,11 @@ class ChatContainer extends Component {
         <div className="content-inner">
           <div className="chat-item-container">
             {chatArea}
-            {/* <div
+            <div
               ref={e => {
                 this.canvas = e;
               }}
-            /> */}
+            />
             {chatEnded && <div className="default">Chat has ended</div>}
           </div>
         </div>

@@ -29,10 +29,11 @@ const sendMessageRequestError = error => ({
   error,
 });
 
-export const listMessages = channelId => async (dispatch) => {
+export const listMessages = (channelId, chatRef) => async (dispatch) => {
   try {
     dispatch(requestChatMessages());
     const res = await axios.get(`/chat/messages/${channelId}`);
+    if (chatRef) chatRef.canvas.scrollIntoView(); // scrolls to last message
     dispatch(requestChatMessagesSuccess(res.data.messages));
   } catch (err) {
     dispatch(requestChatMessagesFailure(err));
