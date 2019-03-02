@@ -4,25 +4,27 @@ import React, { Component } from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 
-import { register } from '../redux/actions/action-auth';
+import { register } from "../redux/actions/action-auth";
 
 class Register extends Component {
   state = {
     username: "",
     password: "",
-    copyPassword: ""
+    copyPassword: "",
+    email: ""
   };
 
   handleRegister = () => {
-    let { username, password, copyPassword } = this.state;
+    let { username, password, copyPassword, email } = this.state;
 
     username = username.trim() || "";
     password = password.trim() || "";
     copyPassword = copyPassword.trim() || "";
+    email = email.trim() || "";
 
-    if (username && password && copyPassword) {
+    if (username && password && copyPassword && email) {
       if (password === copyPassword) {
-        this.props.register(username, password);
+        this.props.register(username, password, email);
       } else alert("Passwords don't match");
     } else alert("Enter all values !!!");
   };
@@ -45,6 +47,13 @@ class Register extends Component {
               className="form-control"
               id="name"
               onChange={e => this.handleTextChange("username", e.target.value)}
+            />
+            <label htmlFor="email">Email</label>
+            <input
+              type="text"
+              className="form-control"
+              id="email"
+              onChange={e => this.handleTextChange("email", e.target.value)}
             />
           </div>
           <div className="form-group">
@@ -86,10 +95,11 @@ const mapStateToProps = state => ({
   user: state.auth.user,
   isLoading: state.auth.isLoading,
   isError: state.auth.isError,
-  error: state.auth.error,
+  error: state.auth.error
 });
 
-const mapDispatchToProps = dispatch => bindActionCreators({ register }, dispatch);
+const mapDispatchToProps = dispatch =>
+  bindActionCreators({ register }, dispatch);
 
 export default connect(
   mapStateToProps,

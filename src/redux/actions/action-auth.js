@@ -76,10 +76,10 @@ export const logout = () => async dispatch => {
   }
 };
 
-export const register = (username, password) => async dispatch => {
+export const register = (username, password, email) => async dispatch => {
   try {
     dispatch(registerRequest());
-    const res = await axios.post("/users/register", { username, password });
+    const res = await axios.post("/users/register", { username, password, email });
     if (res.data.username) {
       dispatch(registerRequestSuccess(res.data));
       dispatch(goBack());
