@@ -276,17 +276,9 @@ class VideoPage extends Component {
   };
 
   handleSendMessage = () => {
-    // 1. adding message using rest api
-
-    // const { chatId } = this.state.session;
     const text = this.state.currentMessage.trim() || "";
-    // this.props.sendMessage({
-    //   channelId: chatId,
-    //   username: this.props.user.username,
-    //   message: text
-    // });
 
-    // 2. Adding message by client SDK
+    // 2. Sending message by client SDK
     this.state.activeChat.sendMessage(text, {
       author: this.props.user.username
     });
@@ -311,7 +303,8 @@ class VideoPage extends Component {
           console.log(err);
         }
       }
-      // // chat event callbacks
+
+      // chat event callbacks
 
       this.props.listMessages(this.state.session.chatId);
 
@@ -321,22 +314,23 @@ class VideoPage extends Component {
 
       // const { items: messages } = await channel.getMessages()
 
+      // TODO: Major area to worked upon
       // // channel callbacks
       channel.on("messageAdded", message => {
-        const msg = {
-          ...message.state,
-          author: this.props.user.username
-        };
-        this.setState(
-          prevState => {
-            const msgData = prevState.messages.concat(msg);
-            console.log(msgData);
-            return {
-              messages: msgData
-            };
-          },
-          () => console.log(this.state.messages)
-        );
+        // const msg = {
+        //   ...message.state,
+        //   author: this.props.user.username
+        // };
+        // this.setState(
+        //   prevState => {
+        //     const msgData = prevState.messages.concat(msg);
+        //     console.log(msgData);
+        //     return {
+        //       messages: msgData
+        //     };
+        //   },
+        //   () => console.log(this.state.messages)
+        // );
 
         this.props.listMessages(this.state.session.chatId);
       });
@@ -356,9 +350,10 @@ class VideoPage extends Component {
   };
 
   handleMenuPress = async (item, index) => {
+    console.log(item, index);
     if (index === 0) {
       try {
-        await endSession();
+        await endSession(this.state.session.id);
       } catch (err) {
         console.log("End session error", err);
       }

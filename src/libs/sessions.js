@@ -9,9 +9,10 @@ const getSession = async (sessionId) => {
   }
 }
 
-const endSession = async (sessionId) => {
+const endSession = async (sessionId, history) => {
   try {
     const res = await axios.get(`/session/end`, { sessionId });
+    console.log(res.data);
     return res.data;
   } catch (err) {
     console.log(err);

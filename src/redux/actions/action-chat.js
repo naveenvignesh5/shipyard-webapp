@@ -21,38 +21,48 @@ const sendMessageRequest = () => ({
 
 const sendMessageRequestSuccess = payload => ({
   type: types.SEND_CHAT_MESSAGE_REQUEST_SUCCESS,
-  payload,
+  payload
 });
 
 const sendMessageRequestError = error => ({
   type: types.SEND_CHAT_MESSAGE_REQUEST_ERROR,
-  error,
+  error
 });
 
-export const listMessages = (channelId) => async (dispatch) => {
+export const listMessages = channelId => async dispatch => {
   try {
     dispatch(requestChatMessages());
     const res = await axios.get(`/chat/messages/${channelId}`);
     // if (chatRef) chatRef.canvas.scrollIntoView(); // scrolls to last message
-    dispatch(requestChatMessagesSuccess(res.data.messages));
+    const messages = res.data.messages;
+    messages.sort(function(a, b) {
+      return new Date(b.date_updated) - new Date(a.date_updated);
+    });
+    dispatch(requestChatMessagesSuccess(messages));
   } catch (err) {
     dispatch(requestChatMessagesFailure(err));
   }
 };
 
-export const sendMessage = messageData => async (dispatch) =>{
+export const sendMessage = messageData => async dispatch => {
   try {
     const { channelId, message, username } = messageData;
 
     if (channelId && message && username) {
       dispatch(sendMessageRequest());
-      await axios.put('/chat/messages', { channelId, message, username });
+      await axios.put("/chat/messages", { channelId, message, username });
       // dispatch(sendMessageRequestSuccess(res.data));
       dispatch(listMessages(channelId));
     } else {
-      dispatch(sendMessageRequestError({ message: "Message data object is not proper" }));
+      dispatch(
+        sendMessageRequestError({
+          message: "Message data object is not proper"
+        })
+      );
     }
   } catch (err) {
-    dispatch(sendMessageRequestError({err, message: "Unable to send message" }));
+    dispatch(
+      sendMessageRequestError({ err, message: "Unable to send message" })
+    );
   }
-}
+};
