@@ -39,19 +39,14 @@ class Dashboard extends Component {
   };
 
   handleCreateRoom = () => {
-    const { roomSize, roomName } = this.state;
+    const { roomName } = this.state;
 
     if (!roomName) {
       alert("Room name cannot be empty");
       return;
     }
 
-    if (!roomSize) {
-      alert("Room size cannot be 0");
-      return;
-    }
-
-    this.props.createRoom(roomName, roomSize, this.props.user);
+    this.props.createRoom(roomName, this.props.user);
   };
 
   // handleRoomListItemPress = room => {
@@ -83,19 +78,6 @@ class Dashboard extends Component {
                   <input
                     onChange={e => this.handleTextChange("roomName", e)}
                     type="text"
-                    className="form-control"
-                    placeholder=""
-                  />
-                </div>
-                <div className="input-group">
-                  <div className="input-group-prepend">
-                    <span className="input-group-text">
-                      Number of people attending
-                    </span>
-                  </div>
-                  <input
-                    onChange={e => this.handleTextChange("roomSize", e)}
-                    type="number"
                     className="form-control"
                     placeholder=""
                   />

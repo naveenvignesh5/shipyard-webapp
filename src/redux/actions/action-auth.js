@@ -98,7 +98,7 @@ export const getUser = () => async dispatch => {
 
       if (user) {
         const tokenRes = await axios.post("/users/token", {
-          userid: user.id
+          userid: user.username,
         });
         user.token = tokenRes.data.token; // renewing token
         dispatch(getUserRequest(user));

@@ -11,8 +11,10 @@ class Questions extends PureComponent {
     return (
       <div className="container-fluid question-container">
         {isLoading ? (
-          <div className="spinner-border" role="status">
-            <span className="sr-only">Loading...</span>
+          <div className="d-flex flex-column align-items-center">
+            Loading...
+            <div className="spinner-border" role="status">
+            </div>
           </div>
         ) : (
           <table className="table">

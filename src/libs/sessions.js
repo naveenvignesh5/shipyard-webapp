@@ -9,11 +9,9 @@ const getSession = async (sessionId) => {
   }
 }
 
-const endSession = async (sessionId, history) => {
+const endSession = async (sessionId) => {
   try {
-    const res = await axios.get(`/session/end`, { sessionId });
-    console.log(res.data);
-    history.goBack();
+    const res = await axios.post(`/session/end`, { sessionId });
     return res.data;
   } catch (err) {
     console.log(err);

@@ -16,69 +16,70 @@ import "../styles/video.css";
 import { listMessages, sendMessage } from "../redux/actions/action-chat";
 import { bindActionCreators } from "redux";
 import Questions from "../components/Questions";
+import QuestionForm from "../components/QuestionForm";
 
-const MESSAGES = [
-  {
-    sid: "IMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-    account_sid: "AC0781fce904345bc1c4012a307bf86c4d",
-    service_sid: "ISXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-    to: "CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-    channel_sid: "CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-    date_created: "2016-03-24T20:37:57Z",
-    date_updated: "2016-03-24T20:37:57Z",
-    last_updated_by: null,
-    was_edited: false,
-    from: "abc",
-    attributes: {},
-    body:
-      "Aliqua amet consectetur sint tempor consequat anim elit veniam. Fugiat et officia ullamco est. Officia ut eiusmod do qui nulla occaecat.",
-    index: 0,
-    type: "text",
-    media: null,
-    url:
-      "https://chat.twilio.com/v2/Services/ISXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Channels/CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Messages/IMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-  },
-  {
-    sid: "IMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-    account_sid: "AC0781fce904345bc1c4012a307bf86c4d",
-    service_sid: "ISXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-    to: "CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-    channel_sid: "CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-    date_created: "2016-03-24T20:37:57Z",
-    date_updated: "2016-03-24T20:37:57Z",
-    last_updated_by: null,
-    was_edited: false,
-    from: "system",
-    attributes: {},
-    body:
-      "Mollit minim Lorem ut pariatur sunt anim nulla ullamco occaecat. Incididunt pariatur minim adipisicing ut occaecat adipisicing laborum. Deserunt pariatur mollit esse ad officia ea Lorem id tempor. Anim incididunt consequat amet aute veniam irure sunt adipisicing esse nisi.",
-    index: 0,
-    type: "text",
-    media: null,
-    url:
-      "https://chat.twilio.com/v2/Services/ISXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Channels/CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Messages/IMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-  },
-  {
-    sid: "IMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-    account_sid: "AC0781fce904345bc1c4012a307bf86c4d",
-    service_sid: "ISXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-    to: "CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-    channel_sid: "CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-    date_created: "2016-03-24T20:37:57Z",
-    date_updated: "2016-03-24T20:37:57Z",
-    last_updated_by: null,
-    was_edited: false,
-    from: "abc",
-    attributes: {},
-    body:
-      "Do minim eu tempor fugiat eiusmod cillum. Ad qui cupidatat aliqua quis. Id minim pariatur est occaecat laborum tempor incididunt. Reprehenderit do amet aliquip aliqua voluptate fugiat ad proident nulla magna. Excepteur dolor laboris consequat culpa sunt laboris anim aliquip sint Lorem.",
-    index: 0,
-    type: "text",
-    media: null,
-    url:
-      "https://chat.twilio.com/v2/Services/ISXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Channels/CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Messages/IMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-  }
-];
+// const MESSAGES = [
+//   {
+//     sid: "IMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+//     account_sid: "AC0781fce904345bc1c4012a307bf86c4d",
+//     service_sid: "ISXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+//     to: "CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+//     channel_sid: "CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+//     date_created: "2016-03-24T20:37:57Z",
+//     date_updated: "2016-03-24T20:37:57Z",
+//     last_updated_by: null,
+//     was_edited: false,
+//     from: "abc",
+//     attributes: {},
+//     body:
+//       "Aliqua amet consectetur sint tempor consequat anim elit veniam. Fugiat et officia ullamco est. Officia ut eiusmod do qui nulla occaecat.",
+//     index: 0,
+//     type: "text",
+//     media: null,
+//     url:
+//       "https://chat.twilio.com/v2/Services/ISXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Channels/CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Messages/IMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+//   },
+//   {
+//     sid: "IMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+//     account_sid: "AC0781fce904345bc1c4012a307bf86c4d",
+//     service_sid: "ISXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+//     to: "CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+//     channel_sid: "CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+//     date_created: "2016-03-24T20:37:57Z",
+//     date_updated: "2016-03-24T20:37:57Z",
+//     last_updated_by: null,
+//     was_edited: false,
+//     from: "system",
+//     attributes: {},
+//     body:
+//       "Mollit minim Lorem ut pariatur sunt anim nulla ullamco occaecat. Incididunt pariatur minim adipisicing ut occaecat adipisicing laborum. Deserunt pariatur mollit esse ad officia ea Lorem id tempor. Anim incididunt consequat amet aute veniam irure sunt adipisicing esse nisi.",
+//     index: 0,
+//     type: "text",
+//     media: null,
+//     url:
+//       "https://chat.twilio.com/v2/Services/ISXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Channels/CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Messages/IMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+//   },
+//   {
+//     sid: "IMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+//     account_sid: "AC0781fce904345bc1c4012a307bf86c4d",
+//     service_sid: "ISXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+//     to: "CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+//     channel_sid: "CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+//     date_created: "2016-03-24T20:37:57Z",
+//     date_updated: "2016-03-24T20:37:57Z",
+//     last_updated_by: null,
+//     was_edited: false,
+//     from: "abc",
+//     attributes: {},
+//     body:
+//       "Do minim eu tempor fugiat eiusmod cillum. Ad qui cupidatat aliqua quis. Id minim pariatur est occaecat laborum tempor incididunt. Reprehenderit do amet aliquip aliqua voluptate fugiat ad proident nulla magna. Excepteur dolor laboris consequat culpa sunt laboris anim aliquip sint Lorem.",
+//     index: 0,
+//     type: "text",
+//     media: null,
+//     url:
+//       "https://chat.twilio.com/v2/Services/ISXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Channels/CHXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Messages/IMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+//   }
+// ];
 
 class VideoPage extends Component {
   static getDerivedStateFromProps = nextProps => {
@@ -219,14 +220,17 @@ class VideoPage extends Component {
       this.attachParticipantTracks(room.localParticipant, previewContainer);
     }
 
-    room.localParticipant.audioTracks.forEach(audioTrack => {
-      // console.log("AudioTrack", )
-      audioTrack.disable();
-    });
+    if (this.props.user.role === 'admin') {
+      console.log('Mute called');
+      room.localParticipant.audioTracks.forEach(audioTrack => {
+        // console.log("AudioTrack", )
+        audioTrack.disable();
+      });
+    }
 
     // Attach the Tracks of the Room's Participants.
     room.participants.forEach(participant => {
-      console.log("Already in Room: '" + participant.identity + "'");
+      console.log("Already in Room: '" + participant + "'");
       previewContainer = this.remoteMedia;
       this.attachParticipantTracks(participant, previewContainer);
     });
@@ -279,9 +283,9 @@ class VideoPage extends Component {
     });
   };
 
-  handleInputChange = (name, e) => {
+  handleInputChange = (name, text) => {
     this.setState({
-      [name]: e.target.value
+      [name]: text,
     });
   };
 
@@ -306,14 +310,11 @@ class VideoPage extends Component {
         this.state.session.chatId
       );
 
-      if (this.props.user.role === "client") {
-        try {
-          await channel.join(); // joining channel only when you are client
-        } catch (err) {
-          console.log(err);
-        }
+      try {
+        await channel.join(); // joining channel only when you are client
+      } catch (err) {
+        console.log(err);
       }
-
       // chat event callbacks
 
       this.props.listMessages(this.state.session.chatId);
@@ -327,21 +328,7 @@ class VideoPage extends Component {
       // TODO: Major area to worked upon
       // // channel callbacks
       channel.on("messageAdded", message => {
-        // const msg = {
-        //   ...message.state,
-        //   author: this.props.user.username
-        // };
-        // this.setState(
-        //   prevState => {
-        //     const msgData = prevState.messages.concat(msg);
-        //     console.log(msgData);
-        //     return {
-        //       messages: msgData
-        //     };
-        //   },
-        //   () => console.log(this.state.messages)
-        // );
-
+        console.log("Added", message);
         this.props.listMessages(this.state.session.chatId);
       });
 
@@ -363,7 +350,9 @@ class VideoPage extends Component {
     console.log(item, index);
     if (index === 0) {
       try {
-        await endSession(this.state.session.id, this.props.history);
+        console.log(this.state.session.id);
+        if(this.props.user.role === 'admin') await endSession(this.state.session.id);
+        if(this.state.hasJoinedRoom) this.leaveRoom();
       } catch (err) {
         console.log("End session error", err);
       }
@@ -407,32 +396,12 @@ class VideoPage extends Component {
               )}
             </div>
             <div className="col-sm-4 col-md-4">
-              <form className="d-flex flex-column">
-                <div className="input-group mb-3">
-                  <div className="input-group-prepend">
-                    <span className="input-group-text" id="basic-addon1">
-                      Your Question
-                    </span>
-                  </div>
-                  <textarea
-                    type="text"
-                    value={this.state.currentMessage}
-                    className="form-control"
-                    placeholder="type your question"
-                    aria-label="question"
-                    aria-describedby="basic-addon1"
-                    onChange={e => this.handleInputChange("currentMessage", e)}
-                  />
-                </div>
-                <button
-                  type="button"
-                  className="btn btn-primary ask-btn"
-                  onClick={this.handleSendMessage}
-                >
-                  Ask
-                </button>
-              </form>
-              <Questions messages={messages} isLoading={isLoading} />
+              {this.state.hasJoinedRoom && user.role !== "admin" && <QuestionForm
+                currentMessage={this.state.currentMessage}
+                handleInputChange={text => this.handleInputChange("currentMessage", text)}
+                handleSendMessage={this.handleSendMessage}
+              />}
+              {this.state.hasJoinedRoom && <Questions messages={messages} isLoading={isLoading} />}
               {/* <ChatContainer
                 messages={messages}
                 // messages={MESSAGES}
