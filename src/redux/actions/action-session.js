@@ -68,3 +68,28 @@ export const createRoom = (name, user) => async dispatch => {
     dispatch(createRoomRequestFailure(err));
   }
 };
+
+// method to upload file
+const listFilesRequest = () => ({
+  type: types.LIST_FILES_REQUEST,
+});
+
+const listFilesRequestSuccess = payload => ({
+  type: types.LIST_FILES_REQUEST_SUCCESS,
+  payload
+});
+
+const listFilesRequestError = error => ({
+  type: types.LIST_FILES_REQUEST_ERROR,
+  error,
+});
+
+export const listFiles = () => async (dispatch) => {
+  try {
+    dispatch(listFilesRequest());
+    const res = await axios.get('/session/ppts');
+    dispatch(listFilesRequestSuccess(res.data));
+  } catch (err) {
+    dispatch(listFilesRequestError(err));
+  }
+};

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import Video from "twilio-video";
 import Chat from "twilio-chat";
+import axios from 'axios';
 
 import { connect } from "react-redux";
 
@@ -108,7 +109,8 @@ class VideoPage extends Component {
     activeChat: null, // Track the current chat
     currentMessage: "",
     messages: [],
-    session: {}
+    session: {},
+    selectedFile: ""
   };
 
   componentDidMount() {
@@ -166,7 +168,7 @@ class VideoPage extends Component {
       this.roomJoined,
       error => {
         console.log(error);
-        alert("Could not connect to Twilio: " + error.message);
+        alert(error.message);
       }
     );
   };
@@ -220,8 +222,8 @@ class VideoPage extends Component {
       this.attachParticipantTracks(room.localParticipant, previewContainer);
     }
 
-    if (this.props.user.role === 'admin') {
-      console.log('Mute called');
+    if (this.props.user.role === "admin") {
+      console.log("Mute called");
       room.localParticipant.audioTracks.forEach(audioTrack => {
         // console.log("AudioTrack", )
         audioTrack.disable();
@@ -279,13 +281,15 @@ class VideoPage extends Component {
 
     // Once the room is completed
     room.on("room-ended", () => {
+      console.log("room-ended");
+      this.leaveRoom();
       this.props.history.goBack();
     });
   };
 
   handleInputChange = (name, text) => {
     this.setState({
-      [name]: text,
+      [name]: text
     });
   };
 
@@ -302,6 +306,7 @@ class VideoPage extends Component {
     });
   };
 
+  // Code: Related to Chat
   initChat = async () => {
     try {
       const chatClient = await Chat.create(this.state.token);
@@ -350,12 +355,32 @@ class VideoPage extends Component {
     console.log(item, index);
     if (index === 0) {
       try {
-        console.log(this.state.session.id);
-        if(this.props.user.role === 'admin') await endSession(this.state.session.id);
-        if(this.state.hasJoinedRoom) this.leaveRoom();
+        if (this.props.user.role === "admin")
+          await endSession(this.state.session.id);
+        if (this.state.hasJoinedRoom) this.leaveRoom();
+        this.props.history.goBack();
       } catch (err) {
         console.log("End session error", err);
       }
+    }
+  };
+
+  handleFileSelect = e => {
+    this.setState({
+      selectedFile: e.target.files[0]
+    });
+  };
+
+  handleFileUpload = async () => {
+    const data = new FormData();
+    data.append("file", this.state.selectedFile, this.state.selectedFile.name);
+    data.append("sessionId", this.state.session.id);
+    
+    try {
+      await axios.post("/session/upload", data);
+      alert('Uploaded File');
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -396,12 +421,18 @@ class VideoPage extends Component {
               )}
             </div>
             <div className="col-sm-4 col-md-4">
-              {this.state.hasJoinedRoom && user.role !== "admin" && <QuestionForm
-                currentMessage={this.state.currentMessage}
-                handleInputChange={text => this.handleInputChange("currentMessage", text)}
-                handleSendMessage={this.handleSendMessage}
-              />}
-              {this.state.hasJoinedRoom && <Questions messages={messages} isLoading={isLoading} />}
+              {this.state.hasJoinedRoom && user.role !== "admin" && (
+                <QuestionForm
+                  currentMessage={this.state.currentMessage}
+                  handleInputChange={text =>
+                    this.handleInputChange("currentMessage", text)
+                  }
+                  handleSendMessage={this.handleSendMessage}
+                />
+              )}
+              {this.state.hasJoinedRoom && (
+                <Questions messages={messages} isLoading={isLoading} />
+              )}
               {/* <ChatContainer
                 messages={messages}
                 // messages={MESSAGES}
@@ -411,6 +442,25 @@ class VideoPage extends Component {
                 ref={e => (this.chatRef = e)}
                 user={{ username: "abc" }}
               /> */}
+              {this.state.hasJoinedRoom && (
+                <div>
+                  <div className="title">Upload Your PPTs</div>
+                  <input
+                    type="file"
+                    name=""
+                    accept=".pptx, .pptm, .ppt"
+                    id=""
+                    onChange={this.handleFileSelect}
+                  />
+                  <button
+                    className="btn btn-primary"
+                    type="button"
+                    onClick={this.handleFileUpload}
+                  >
+                    Upload
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
