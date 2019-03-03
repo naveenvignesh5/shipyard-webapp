@@ -71,7 +71,7 @@ export const logout = () => async dispatch => {
   try {
     sessionStorage.setItem("user", null);
     dispatch(logoutRequest());
-    dispatch(push("/"));
+    dispatch(goBack());
   } catch (err) {
     console.log(err);
   }

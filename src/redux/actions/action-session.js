@@ -62,6 +62,7 @@ export const createRoom = (name, user) => async dispatch => {
     };
 
     const res = await axios.post("/session/createWithChat", config);
+    console.log(res.data.users);
     dispatch(createRoomRequestSuccess(res.data));
     dispatch(listActiveRooms());
   } catch (err) {
