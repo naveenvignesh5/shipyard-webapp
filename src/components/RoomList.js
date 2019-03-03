@@ -10,6 +10,7 @@ class RoomList extends PureComponent {
       isLoading,
       rooms,
       nullMessage,
+      path,
     } = this.props;
 
     return (
@@ -26,7 +27,7 @@ class RoomList extends PureComponent {
                   <Link
                     type="button"
                     key={index.toString()}
-                    to={`/video/${room.id}`}
+                    to={`${path}/${room.id}`}
                     className="list-group-item list-group-item-action"
                   >
                     {room.name}

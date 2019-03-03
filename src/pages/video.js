@@ -476,7 +476,7 @@ class VideoPage extends Component {
                         this.props.listFiles(this.state.session.id)
                       }
                     >
-                      Refresh
+                      Sync Files
                     </button>
                   </div>
                   <FileList

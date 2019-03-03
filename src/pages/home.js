@@ -191,6 +191,7 @@ class Home extends Component {
             isLoading={isLoading}
             title="List of Live Sessions"
             rooms={roomsLive}
+            path="/video"
             nullMessage="No Active Conferences"
           />
           <div

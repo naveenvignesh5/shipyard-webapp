@@ -168,6 +168,7 @@ class Dashboard extends Component {
                 loadingMessage="Loading Active Sessions..."
                 isLoading={isLoading}
                 rooms={roomsLive}
+                path="/video"
                 nullMessage="No Active Conferences"
               />
             </div>
@@ -178,6 +179,7 @@ class Dashboard extends Component {
                 loadingMessage="Loading Closed Conferences..."
                 nullMessage="No History of Conferences"
                 isLoading={isLoading}
+                path="/summary"
               />
             </div>
           </div>

@@ -58,7 +58,7 @@ export const createRoom = (name, user) => async dispatch => {
 
     const config = {
       name,
-      user,
+      user
     };
 
     const res = await axios.post("/session/createWithChat", config);
@@ -72,7 +72,7 @@ export const createRoom = (name, user) => async dispatch => {
 
 // method to upload file
 const listFilesRequest = () => ({
-  type: types.LIST_FILES_REQUEST,
+  type: types.LIST_FILES_REQUEST
 });
 
 const listFilesRequestSuccess = payload => ({
@@ -82,10 +82,10 @@ const listFilesRequestSuccess = payload => ({
 
 const listFilesRequestError = error => ({
   type: types.LIST_FILES_REQUEST_ERROR,
-  error,
+  error
 });
 
-export const listFiles = (sessionId) => async (dispatch) => {
+export const listFiles = sessionId => async dispatch => {
   try {
     dispatch(listFilesRequest());
     const res = await axios.get(`/session/files/${sessionId}`);
@@ -94,3 +94,28 @@ export const listFiles = (sessionId) => async (dispatch) => {
     dispatch(listFilesRequestError(err));
   }
 };
+
+// method to upload file
+const listRecordRequest = () => ({
+  type: types.LIST_RECORD_REQUEST
+});
+
+const listRecordRequestSuccess = payload => ({
+  type: types.LIST_FILES_REQUEST_SUCCESS,
+  payload
+});
+
+const listRecordRequestError = error => ({
+  type: types.LIST_RECORD_REQUEST_ERROR,
+  error
+});
+
+export const listRecordings = roomId => async dispatch => {
+  try {
+    dispatch(listRecordRequest());
+    const res = await axios.get(`/session/recordings/${roomId}`);
+    listRecordRequestError(res.data.recordings);
+  } catch (err) {
+    dispatch(listRecordRequestSuccess(err))
+  }
+}
