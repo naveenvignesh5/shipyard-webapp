@@ -37,7 +37,7 @@ class Register extends Component {
 
   render() {
     return (
-      <div className="container-fluid login-container">
+      <div className="container-fluid register-container">
         <div className="title">Register</div>
         <form className="form">
           <div className="form-group">

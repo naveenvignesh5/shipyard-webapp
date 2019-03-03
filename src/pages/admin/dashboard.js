@@ -10,7 +10,7 @@ import { logout } from "../../redux/actions/action-auth";
 import {
   listCompletedRooms,
   listActiveRooms,
-  createRoom,
+  createRoom
 } from "../../redux/actions/action-session";
 
 import "../../styles/dashboard.css";
@@ -99,6 +99,13 @@ class Dashboard extends Component {
           <div className="dashboard-welcome">
             Welcome <strong>{user.username}</strong>
           </div>
+          {/* <embed
+            src="/files/resume.pdf#toolbar=0"
+            width="600"
+            height="500"
+            alt="pdf"
+            pluginspage="http://www.adobe.com/products/acrobat/readstep2.html"
+          /> */}
           <div className="row">
             <div className="col-md-6 col-sm-6">
               <form>
@@ -190,7 +197,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
-    { logout, listCompletedRooms, listActiveRooms, createRoom, },
+    { logout, listCompletedRooms, listActiveRooms, createRoom },
     dispatch
   );
 

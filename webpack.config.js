@@ -1,9 +1,9 @@
 const path = require("path");
 const HWP = require("html-webpack-plugin");
-const ManifestPlugin = require('webpack-manifest-plugin');
+const ManifestPlugin = require("webpack-manifest-plugin");
 
 module.exports = {
-  entry: path.join(__dirname, '/src/index.js'),
+  entry: path.join(__dirname, "/src/index.js"),
   mode: "development",
   module: {
     rules: [
@@ -17,17 +17,15 @@ module.exports = {
         use: ["style-loader", "css-loader"]
       },
       {
-        test: /\.(png|svg|jpg|gif)$/,
+        test: /\.(png|svg|jpg|gif|pdf)$/,
         use: ["file-loader"]
       }
     ]
   },
-  devtool: 'inline-source-map',
+  devtool: "inline-source-map",
   plugins: [
-    new HWP(
-      { template: path.join(__dirname, '/public/index.html') }
-    ),
-    new ManifestPlugin({ fileName: 'manifest.json' }),
+    new HWP({ template: path.join(__dirname, "/public/index.html") }),
+    new ManifestPlugin({ fileName: "manifest.json" })
   ],
   resolve: {
     extensions: ["*", ".js", ".jsx"]

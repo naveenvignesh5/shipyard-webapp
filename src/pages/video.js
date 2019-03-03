@@ -112,14 +112,17 @@ class VideoPage extends Component {
     currentMessage: "",
     messages: [],
     session: {},
-    selectedFile: ""
+    selectedFile: "",
+    currentPdf: ""
   };
 
   componentDidMount() {
     this.loadSession(this.props.match.params.id);
   }
 
-  handleOnTrackPress = track => {};
+  handleOnTrackPress = track => {
+    console.log(track);
+  };
 
   loadSession = async id => {
     const session = await getSession(id);
@@ -144,6 +147,7 @@ class VideoPage extends Component {
         },
         () => {
           this.joinRoom();
+          this.props.listFiles(this.state.session.id);
           // this.initChat();
         }
       );
@@ -151,10 +155,10 @@ class VideoPage extends Component {
   };
 
   joinRoom = () => {
-    if (!this.state.roomName.trim()) {
-      this.setState({ roomNameErr: true });
-      return;
-    }
+    // if (!this.state.roomName.trim()) {
+    //   this.setState({ roomNameErr: true });
+    //   return;
+    // }
 
     console.log("Joining room '" + this.state.roomName + "'...");
     let connectOptions = {
@@ -170,38 +174,9 @@ class VideoPage extends Component {
     Video.connect(this.state.token, connectOptions).then(
       this.roomJoined,
       error => {
-        console.log(error);
         alert(error.message);
       }
     );
-  };
-
-  attachTracks = (tracks, container) => {
-    let wrapper = document.createElement("div");
-    wrapper.className = "track-wrapper";
-    tracks.forEach(track => {
-      wrapper.appendChild(track.attach());
-    });
-    container.appendChild(wrapper);
-  };
-
-  // Attaches a track to a specified DOM container
-  attachParticipantTracks = (participant, container) => {
-    const tracks = Array.from(participant.tracks.values());
-    this.attachTracks(tracks, container);
-  };
-
-  detachTracks = tracks => {
-    tracks.forEach(track => {
-      track.detach().forEach(detachedElement => {
-        detachedElement.remove();
-      });
-    });
-  };
-
-  detachParticipantTracks = participant => {
-    const tracks = Array.from(participant.tracks.values());
-    this.detachTracks(tracks);
   };
 
   leaveRoom = () => {
@@ -209,10 +184,99 @@ class VideoPage extends Component {
     this.setState({ hasJoinedRoom: false, localMediaAvailable: false });
   };
 
-  roomJoined = room => {
-    // Called when a participant joins a room
-    console.log("Joined as '" + this.state.identity + "'");
+  localUserConnected = participant => {
+    const div = document.createElement("div");
+    div.className = "localUser";
 
+    participant.on("trackSubscribed", track =>
+      this.trackSubscribed(div, track)
+    );
+    participant.on("trackUnsubscribed", this.trackUnsubscribed);
+
+    div.id = participant.sid;
+    div.innerText = participant.identity;
+
+    participant.tracks.forEach(publication => {
+      if (publication.isSubscribed) {
+        this.trackSubscribed(div, publication.track);
+      }
+    });
+
+    this.localMedia.appendChild(div);
+  };
+
+  participantConnected = participant => {
+    if (participant.identity === "admin") {
+      const temp = document.createElement("div");
+      temp.className = "admin-wrapper";
+      this.adminMedia.appendChild(temp);
+
+      participant.on("trackSubscribed", track =>
+        this.trackSubscribed(temp, track)
+      );
+      participant.on("trackUnsubscribed", this.trackUnsubscribed);
+
+      participant.tracks.forEach(publication => {
+        if (publication.isSubscribed) {
+          this.trackSubscribed(temp, publication.track);
+        }
+      });
+
+      this.adminMedia.appendChild(temp);
+    } else {
+      console.log('Participant "%s" connected', participant.identity);
+
+      const div = document.createElement("div");
+      const textDiv = document.createElement("div");
+      div.id = participant.sid;
+
+      textDiv.innerText = participant.identity;
+      textDiv.className = "username";
+
+      div.append(textDiv);
+
+      div.className = "track-wrapper";
+
+      if (this.props.user.role === "admin") {
+        const btn = document.createElement("button");
+        btn.className = "btn btn-primary mute-btn";
+
+        btn.innerText = "Mute";
+        btn.onClick = this.handleOnTrackPress(participant);
+
+        div.append(btn);
+        participant.on("trackSubscribed", track =>
+          this.trackSubscribed(div, track)
+        );
+        participant.on("trackUnsubscribed", this.trackUnsubscribed);
+    
+        participant.tracks.forEach(publication => {
+          if (publication.isSubscribed) {
+            this.trackSubscribed(div, publication.track);
+          }
+        });
+    
+        this.remoteMedia.appendChild(div);
+      }
+    }
+
+  };
+
+  participantDisconnected = participant => {
+    console.log('Participant "%s" disconnected', participant.identity);
+    document.getElementById(participant.sid).remove();
+  };
+
+  trackSubscribed = (div, track) => {
+    div.onClick = this.handleOnTrackPress(track); // hope it works
+    div.appendChild(track.attach());
+  };
+
+  trackUnsubscribed = track => {
+    track.detach().forEach(element => element.remove());
+  };
+
+  roomJoined = room => {
     this.setState({
       activeRoom: room,
       localMediaAvailable: true,
@@ -221,74 +285,32 @@ class VideoPage extends Component {
 
     // this.props.listFiles();
     // Attach LocalParticipant's Tracks, if not already attached.
-    var previewContainer = this.localMedia;
-    if (!previewContainer.querySelector("video")) {
-      this.attachParticipantTracks(room.localParticipant, previewContainer);
-    }
+    // var previewContainer = this.localMedia;
+    // if (!previewContainer.querySelector("video")) {
+    //   this.attachParticipantTracks(room.localParticipant, previewContainer);
+    // }
 
-    if (this.props.user.role === "admin") {
-      console.log("Mute called");
-      room.localParticipant.audioTracks.forEach(audioTrack => {
-        // console.log("AudioTrack", )
-        audioTrack.disable();
-      });
-    }
+    const userDiv = document.createElement("div");
 
-    // Attach the Tracks of the Room's Participants.
-    room.participants.forEach(participant => {
-      console.log("Already in Room: '" + participant + "'");
-      previewContainer = this.remoteMedia;
-      this.attachParticipantTracks(participant, previewContainer);
+    const userTracks = Array.from(room.localParticipant.tracks.values());
+
+    userTracks.forEach(track => {
+      userDiv.appendChild(track.attach());
     });
+
+    this.localMedia.appendChild(userDiv);
+    // Attach the Tracks of the Room's Participants.
+    room.participants.forEach(this.participantConnected);
 
     // When a Participant joins the Room, log the event.
-    room.on("participantConnected", participant => {
-      console.log("Joining: '" + participant.identity + "'");
-    });
-
-    // When a Participant adds a Track, attach it to the DOM.
-    room.on("trackSubscribed", (track, participant) => {
-      console.log(participant.identity + " added track: " + track.kind);
-      var previewContainer = this.remoteMedia;
-      console.log("Particpant", participant);
-      this.attachTracks([track], previewContainer);
-    });
-
-    // When a Participant removes a Track, detach it from the DOM.
-    room.on("trackUnsubscribed", (track, participant) => {
-      this.log(participant.identity + " removed track: " + track.kind);
-      this.detachTracks([track]);
-    });
+    room.on("participantConnected", this.participantConnected);
 
     // When a Participant leaves the Room, detach its Tracks.
-    room.on("participantDisconnected", participant => {
-      console.log("Participant '" + participant.identity + "' left the room");
-      this.detachParticipantTracks(participant);
-    });
+    room.on("participantDisconnected", this.participantDisconnected);
 
-    // Once the LocalParticipant leaves the room, detach the Tracks
-    // of all Participants, including that of the LocalParticipant.
-    room.on("disconnected", () => {
-      if (this.state.previewTracks) {
-        this.state.previewTracks.forEach(track => {
-          track.stop();
-        });
-      }
-      this.detachParticipantTracks(room.localParticipant);
-      room.participants.forEach(this.detachParticipantTracks);
-      this.setState({
-        activeRoom: null,
-        hasJoinedRoom: false,
-        localMediaAvailable: false
-      });
-    });
-
-    // Once the room is completed
-    room.on("room-ended", () => {
-      console.log("room-ended");
-      this.leaveRoom();
-      this.props.history.goBack();
-    });
+    room.once("disconnected", error =>
+      room.participants.forEach(this.participantDisconnected)
+    );
   };
 
   handleInputChange = (name, text) => {
@@ -300,14 +322,15 @@ class VideoPage extends Component {
   handleSendMessage = () => {
     const text = this.state.currentMessage.trim() || "";
 
-    // 2. Sending message by client SDK
-    this.state.activeChat.sendMessage(text, {
-      author: this.props.user.username
-    });
+    if (text) {
+      this.state.activeChat.sendMessage(text, {
+        author: this.props.user.username
+      });
 
-    this.setState({
-      currentMessage: ""
-    });
+      this.setState({
+        currentMessage: ""
+      });
+    }
   };
 
   // Code: Related to Chat
@@ -382,6 +405,7 @@ class VideoPage extends Component {
 
     try {
       await axios.post("/session/upload", data);
+      this.props.listFiles(this.state.session.id);
       alert("Uploaded File");
     } catch (err) {
       console.log(err);
@@ -399,45 +423,77 @@ class VideoPage extends Component {
           onMenuPress={this.handleMenuPress}
         />
         <div className="video-dashboard">
+          {!hasJoinedRoom ? (
+            <button
+              type="button"
+              className="join-btn btn btn-primary"
+              onClick={this.handleJoinRoom}
+            >
+              Join Room
+            </button>
+          ) : (
+            <div className="d-flex flex-row">
+              <div className="admin-wrapper" ref={e => (this.adminMedia = e)} />
+              <div className={`d-flex flex-${this.props.user.role === 'admin' ? 'row' : 'column'} align-items-center`}>
+                <div
+                  className="d-flex flex-row"
+                  ref={e => (this.remoteMedia = e)}
+                  id="remote-media"
+                />
+              </div>
+            </div>
+          )}
+          <br />
           <div className="row">
-            <div className="col-sm-8 col-md-8">
-              {hasJoinedRoom ? (
+            <div className="col-sm-6 col-md-6">
+              <Questions messages={messages} />
+            </div>
+            <div className="col-sm-6 col-md-6">
+              <div className="localUser" ref={e => (this.localMedia = e)} />
+              {this.props.user.role === "client" ? (
                 <div>
-                  <div
-                    // className="flex-item"
-                    ref={e => (this.localMedia = e)}
-                    id="local-media"
+                  <QuestionForm
+                    handleInputChange={text =>
+                      this.handleInputChange("currentMessage", text)
+                    }
+                    handleSendMessage={this.handleSendMessage}
+                    isLoading={isLoading}
                   />
-                  <div
-                    // className="flex-item"
-                    ref={e => (this.remoteMedia = e)}
-                    id="remote-media"
+                  <div className="d-flex flex-row mb-2">
+                    <button
+                      type="button"
+                      className="btn btn-info mr-2"
+                      onClick={() => this.setState({ currentPdf: "" })}
+                      // onClick={() => this.props.listFiles(this.state.session.id)}
+                    >
+                      <span className="glyphicon glyphicon-search" />
+                      Clear
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-info"
+                      onClick={() =>
+                        this.props.listFiles(this.state.session.id)
+                      }
+                    >
+                      Refresh
+                    </button>
+                  </div>
+                  <FileList
+                    handleListItemPress={path => {
+                      console.log(path);
+                      this.setState({ currentPdf: path }, () =>
+                        console.log(this.state.currentPdf)
+                      );
+                    }}
+                    currentFile={this.state.currentPdf}
+                    files={files}
+                    sessionId={this.state.session.id}
                   />
                 </div>
               ) : (
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={this.handleJoinRoom}
-                >
-                  Join Room
-                </button>
-              )}
-            </div>
-            <div className="col-sm-4 col-md-4">
-              {this.state.hasJoinedRoom && user.role !== "admin" && (
-                <QuestionForm
-                  currentMessage={this.state.currentMessage}
-                  handleInputChange={text =>
-                    this.handleInputChange("currentMessage", text)
-                  }
-                  handleSendMessage={this.handleSendMessage}
-                />
-              )}
-              {this.state.hasJoinedRoom && (
                 <div>
-                  <Questions messages={messages} isLoading={isLoading} />
-                  <div className="title">Upload Your PPTs</div>
+                  <div className="title">Upload Your PDFs</div>
                   <input
                     type="file"
                     name=""
@@ -452,9 +508,6 @@ class VideoPage extends Component {
                   >
                     Upload
                   </button>
-                  {files && files.length > 0 && (
-                    <FileList files={files} sessionId={this.state.session.id} />
-                  )}
                 </div>
               )}
             </div>

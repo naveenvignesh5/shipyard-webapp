@@ -1,5 +1,14 @@
 .question-container {
-    height: 500px;
+    height: 400px;
     overflow: scroll;
     overflow-x: hidden;
+    margin-top: 10px;
+}
+
+.question-container th {
+    text-align: center;
+}
+
+.question-container td {
+    text-align: center;
 }
