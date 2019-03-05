@@ -6,7 +6,7 @@ React Webapp for Shipyard Streaming Product.
 
 Fork and clone the repo beside the webpack-server directory.
 
-`git clone https://gitlab.com/{Username}/shipyard-webapp.git`
+`git clone https://github.com/naveenvignesh5/shipyard-webapp.git`
 
 
     ├── shipyard-server             # Server Folder
